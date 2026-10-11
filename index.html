@@ -105,6 +105,19 @@ h1 .ln{display:block;white-space:nowrap}
   box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 10px 30px rgba(0,0,0,.5),0 0 0 8px rgba(74,112,221,.25)}
 .playbtn::after{content:"";position:absolute;left:31px;top:24px;border-left:24px solid #FBF4EC;border-top:15px solid transparent;border-bottom:15px solid transparent}
 .playbtn[hidden]{display:none}
+/* capa desenhada */
+.capa{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 40%,#1a1316 0%,var(--noite) 70%);overflow:hidden;
+  background-image:linear-gradient(rgba(201,162,74,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(201,162,74,.06) 1px,transparent 1px),radial-gradient(120% 90% at 50% 40%,#1a1316 0%,var(--noite) 70%);
+  background-size:22px 22px,22px 22px,100% 100%}
+.capa[hidden]{display:none}
+.capa-kicker{position:absolute;left:0;right:0;top:9%;text-align:center;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ouro);font-weight:600}
+.pi{position:absolute;padding:5px 9px 7px;font-size:clamp(10px,2.9vw,14px);font-weight:600;color:#1C1416;border-radius:2px;transform:rotate(var(--r));box-shadow:0 6px 12px -6px rgba(0,0,0,.7)}
+.pi.verde{background:#CFE8A6}.pi.amarelo{background:#F7E27C}.pi.rosa{background:#F5B9C6}
+.scan-linha{position:absolute;left:0;right:0;height:2px;background:var(--ouro);box-shadow:0 0 18px 4px rgba(201,162,74,.45);animation:scanc 2.4s ease-in-out infinite alternate}
+@keyframes scanc{from{top:18%}to{top:86%}}
+.capa-pe{position:absolute;left:0;right:0;bottom:7%;text-align:center;font-family:var(--f-voz);font-style:italic;font-size:clamp(14px,4vw,19px);color:var(--creme)}
+.playbtn{z-index:2}
+
 .trancado b{font-family:var(--f-txt);font-style:normal;font-weight:700;color:var(--ouro);font-variant-numeric:tabular-nums}
 .privacidade{margin:10px 0 0;text-align:center;font-size:12px}
 .privacidade a{color:var(--suave)}
@@ -120,7 +133,18 @@ h1 .ln{display:block;white-space:nowrap}
   <p class="assista">Assista ao vídeo: eu te explico como funciona.</p>
 
   <div class="video" style="margin-top:12px">
-    <video id="v" src="video/raio-x-video-1.mp4" poster="video/raio-x-video-1-capa.jpg" playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture></video>
+    <video id="v" src="video/raio-x-video-1.mp4" playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture></video>
+    <!-- capa desenhada (sem foto): os post-its do Raio-X e a linha do scanner; some no play -->
+    <div class="capa" id="capa" aria-hidden="true">
+      <span class="capa-kicker">Raio-X da Metodologia</span>
+      <span class="pi verde" style="left:7%;top:30%;--r:-6deg">Porquê</span>
+      <span class="pi amarelo" style="left:26%;top:64%;--r:4deg">Método</span>
+      <span class="pi rosa" style="right:24%;top:24%;--r:5deg">Oferta</span>
+      <span class="pi amarelo" style="right:6%;top:58%;--r:-4deg">Assunto</span>
+      <span class="pi rosa" style="left:8%;top:70%;--r:-3deg">Perfil</span>
+      <i class="scan-linha"></i>
+      <span class="capa-pe">Aperte o play · 1 minuto</span>
+    </div>
     <button class="playbtn" id="playbtn" type="button" aria-label="Dar play no vídeo"></button>
   </div>
   <div class="trilho" aria-hidden="true"><i id="barra"></i></div>
@@ -156,7 +180,7 @@ let liberado = false;
 function revela(){ if(liberado) return; liberado = true; trancado.hidden = true; document.getElementById("abre").hidden = false; }
 const mmss = n => "0:" + String(Math.max(0, Math.ceil(n))).padStart(2,"0");
 playbtn.onclick = () => { v.play(); };
-v.addEventListener("play", () => { playbtn.hidden = true; v.controls = true; if(!liberado) trancado.firstChild.textContent = "Seu botão libera em "; });
+v.addEventListener("play", () => { playbtn.hidden = true; document.getElementById("capa").hidden = true; v.controls = true; if(!liberado) trancado.firstChild.textContent = "Seu botão libera em "; });
 v.addEventListener("pause", () => { if(!v.ended) playbtn.hidden = false; });
 v.addEventListener("timeupdate", () => {
   if(v.duration) barra.style.width = Math.min(100, v.currentTime / v.duration * 100) + "%";
