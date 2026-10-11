@@ -97,8 +97,15 @@ h1 .ln{display:block;white-space:nowrap}
 .prova q{color:var(--creme);font-family:var(--f-voz);font-style:italic;font-size:16px}
 .assin{margin-top:44px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--suave);text-align:center}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-.video{padding:0;overflow:hidden}
-.video iframe{width:100%;height:100%;border:0;display:block}
+.video{padding:0;overflow:hidden;position:relative}
+.video video{width:100%;height:100%;display:block;object-fit:cover;background:#000}
+/* play próprio, no azul dos botões, sobre a capa */
+.playbtn{position:absolute;inset:0;margin:auto;width:78px;height:78px;border-radius:50%;border:0;cursor:pointer;
+  background:linear-gradient(135deg,#4A70DD 0%,var(--destaque) 48%,#132E86 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 10px 30px rgba(0,0,0,.5),0 0 0 8px rgba(74,112,221,.25)}
+.playbtn::after{content:"";position:absolute;left:31px;top:24px;border-left:24px solid #FBF4EC;border-top:15px solid transparent;border-bottom:15px solid transparent}
+.playbtn[hidden]{display:none}
+.trancado b{font-family:var(--f-txt);font-style:normal;font-weight:700;color:var(--ouro);font-variant-numeric:tabular-nums}
 .privacidade{margin:10px 0 0;text-align:center;font-size:12px}
 .privacidade a{color:var(--suave)}
 </style>
@@ -112,11 +119,14 @@ h1 .ln{display:block;white-space:nowrap}
   <p class="lead">Em 3 minutos, veja quais pontas ainda estão soltas para todo o seu potencial virar uma metodologia que trabalha por você.</p>
   <p class="assista">Assista ao vídeo: eu te explico como funciona.</p>
 
-  <div class="video" style="margin-top:12px"><div id="player"></div></div>
+  <div class="video" style="margin-top:12px">
+    <video id="v" src="video/raio-x-video-1.mp4" poster="video/raio-x-video-1-capa.jpg" playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture></video>
+    <button class="playbtn" id="playbtn" type="button" aria-label="Dar play no vídeo"></button>
+  </div>
   <div class="trilho" aria-hidden="true"><i id="barra"></i></div>
 
   <div class="cta">
-    <p class="trancado" id="trancado">Durante o vídeo, o botão para receber o seu Raio-X aparece aqui.</p>
+    <p class="trancado" id="trancado">Dê o play: seu botão libera em <b id="conta">0:60</b></p>
     <div class="abre" id="abre" hidden>
       <div class="campo">
         <label for="nome">Seu nome para liberar</label>
@@ -137,32 +147,24 @@ h1 .ln{display:block;white-space:nowrap}
 </main>
 
 <script>
-/* Vídeo 1 (YouTube, não listado). O nome e o botão aparecem aos 60 s do vídeo. */
-const VIDEO_YOUTUBE = "vpXvdH7PnF4";
+/* Vídeo 1: arquivo próprio, sem marcas. O nome e o botão aparecem aos 60 s do vídeo. */
 const WHATSAPP = "5598985166559"; /* agente: (98) 98516-6559 */
 const REVELA_EM = 60;
-const barra = document.getElementById("barra");
-function revela(){ document.getElementById("trancado").hidden = true; document.getElementById("abre").hidden = false; }
-/* segurança: se o player não carregar, o botão aparece mesmo assim depois de 75 s */
-const reserva = setTimeout(revela, 75000);
-let player, relogio;
-window.onYouTubeIframeAPIReady = function(){
-  player = new YT.Player("player", {
-    host: "https://www.youtube-nocookie.com",
-    videoId: VIDEO_YOUTUBE,
-    playerVars: { rel: 0, modestbranding: 1, playsinline: 1 },
-    events: { onStateChange: e => {
-      if(e.data === YT.PlayerState.PLAYING && !relogio){
-        relogio = setInterval(() => {
-          const t = player.getCurrentTime(), d = player.getDuration() || 79;
-          barra.style.width = Math.min(100, t / d * 100) + "%";
-          if(t >= REVELA_EM){ clearTimeout(reserva); revela(); }
-        }, 500);
-      }
-    }}
-  });
-};
-const tag = document.createElement("script"); tag.src = "https://www.youtube.com/iframe_api"; document.head.appendChild(tag);
+const v = document.getElementById("v"), playbtn = document.getElementById("playbtn");
+const barra = document.getElementById("barra"), conta = document.getElementById("conta"), trancado = document.getElementById("trancado");
+let liberado = false;
+function revela(){ if(liberado) return; liberado = true; trancado.hidden = true; document.getElementById("abre").hidden = false; }
+const mmss = n => "0:" + String(Math.max(0, Math.ceil(n))).padStart(2,"0");
+playbtn.onclick = () => { v.play(); };
+v.addEventListener("play", () => { playbtn.hidden = true; v.controls = true; if(!liberado) trancado.firstChild.textContent = "Seu botão libera em "; });
+v.addEventListener("pause", () => { if(!v.ended) playbtn.hidden = false; });
+v.addEventListener("timeupdate", () => {
+  if(v.duration) barra.style.width = Math.min(100, v.currentTime / v.duration * 100) + "%";
+  if(!liberado) conta.textContent = mmss(REVELA_EM - v.currentTime);
+  if(v.currentTime >= REVELA_EM) revela();
+});
+v.addEventListener("ended", revela);
+v.addEventListener("error", revela); /* se o vídeo falhar, ninguém fica presa */
 
 /* mensagem pronta do WhatsApp (o agente reconhece a frase "Raio-X da Metodologia") */
 const mensagem = nome => "Olá! Sou a " + nome + " e quero fazer o Raio-X da Metodologia.";
