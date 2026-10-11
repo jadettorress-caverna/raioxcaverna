@@ -117,6 +117,11 @@ h1 .ln{display:block;white-space:nowrap}
 @keyframes scanc{from{top:18%}to{top:86%}}
 .capa-pe{position:absolute;left:0;right:0;bottom:7%;text-align:center;font-family:var(--f-voz);font-style:italic;font-size:clamp(14px,4vw,19px);color:var(--creme)}
 .playbtn{z-index:2}
+.fim{border:0;padding:0;width:100%;cursor:pointer;z-index:3;font:inherit;color:inherit}
+.fim-txt{position:absolute;left:0;right:0;top:27%;text-align:center;font-family:var(--f-voz);font-style:italic;font-size:clamp(24px,7vw,34px);color:var(--ouro)}
+.fim-seta{position:absolute;left:50%;top:52%;width:22px;height:22px;margin-left:-11px;border-right:3px solid var(--ouro);border-bottom:3px solid var(--ouro);transform:rotate(45deg);animation:seta 1.4s ease-in-out infinite}
+@keyframes seta{0%,100%{translate:0 0}50%{translate:0 8px}}
+
 
 .trancado b{font-family:var(--f-txt);font-style:normal;font-weight:700;color:var(--ouro);font-variant-numeric:tabular-nums}
 .privacidade{margin:10px 0 0;text-align:center;font-size:12px}
@@ -146,6 +151,13 @@ h1 .ln{display:block;white-space:nowrap}
       <span class="capa-pe">Aperte o play · 1 minuto</span>
     </div>
     <button class="playbtn" id="playbtn" type="button" aria-label="Dar play no vídeo"></button>
+    <!-- capa de encerramento: aparece quando o vídeo termina e leva ao campo do nome -->
+    <button class="capa fim" id="fim" type="button" hidden>
+      <span class="capa-kicker">Raio-X da Metodologia</span>
+      <span class="fim-txt">Seu Raio-X está liberado.</span>
+      <span class="fim-seta" aria-hidden="true"></span>
+      <span class="capa-pe">Escreva seu nome aqui embaixo</span>
+    </button>
   </div>
   <div class="trilho" aria-hidden="true"><i id="barra"></i></div>
 
@@ -187,7 +199,8 @@ v.addEventListener("timeupdate", () => {
   if(!liberado) conta.textContent = mmss(REVELA_EM - v.currentTime);
   if(v.currentTime >= REVELA_EM) revela();
 });
-v.addEventListener("ended", revela);
+v.addEventListener("ended", () => { revela(); playbtn.hidden = true; v.controls = false; document.getElementById("fim").hidden = false; });
+document.getElementById("fim").onclick = () => { campo.scrollIntoView({behavior:"smooth", block:"center"}); setTimeout(() => campo.focus(), 400); };
 v.addEventListener("error", revela); /* se o vídeo falhar, ninguém fica presa */
 
 /* mensagem pronta do WhatsApp (o agente reconhece a frase "Raio-X da Metodologia") */
