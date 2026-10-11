@@ -150,7 +150,7 @@ h1 .ln{display:block;white-space:nowrap}
   <div class="trilho" aria-hidden="true"><i id="barra"></i></div>
 
   <div class="cta">
-    <p class="trancado" id="trancado">Dê o play: seu botão libera em <b id="conta">0:60</b></p>
+    <p class="trancado" id="trancado">Dê o play: seu Raio-X libera em <b id="conta">0:60</b></p>
     <div class="abre" id="abre" hidden>
       <div class="campo">
         <label for="nome">Seu nome para liberar</label>
@@ -180,7 +180,7 @@ let liberado = false;
 function revela(){ if(liberado) return; liberado = true; trancado.hidden = true; document.getElementById("abre").hidden = false; }
 const mmss = n => "0:" + String(Math.max(0, Math.ceil(n))).padStart(2,"0");
 playbtn.onclick = () => { v.play(); };
-v.addEventListener("play", () => { playbtn.hidden = true; document.getElementById("capa").hidden = true; v.controls = true; if(!liberado) trancado.firstChild.textContent = "Seu botão libera em "; });
+v.addEventListener("play", () => { playbtn.hidden = true; document.getElementById("capa").hidden = true; v.controls = true; if(!liberado) trancado.firstChild.textContent = "Seu Raio-X libera em "; });
 v.addEventListener("pause", () => { if(!v.ended) playbtn.hidden = false; });
 v.addEventListener("timeupdate", () => {
   if(v.duration) barra.style.width = Math.min(100, v.currentTime / v.duration * 100) + "%";
