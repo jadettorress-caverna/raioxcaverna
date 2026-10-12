@@ -321,6 +321,8 @@ let R = {}; let passo = -1;
 /* ilustração em todas as respostas (traço dourado), aprovado pela Jade em 11/10 */
 const IMAGENS = true;
 const app = document.getElementById("app");
+/* checkout da Caverna Azul (R$397) na Kiwify, enviado pela Jade em 12/10 */
+const KIWIFY = "https://pay.kiwify.com.br/xD0EQQ4";
 const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 function abertura(){
@@ -657,7 +659,7 @@ function plano(){
   document.getElementById("ver-raiox").onclick=diagnostico;
   const v3=document.getElementById("v3v");
   document.getElementById("som3").onclick=()=>{ document.getElementById("som3").hidden=true; v3.controls=true; v3.play().catch(()=>{}); };
-  document.getElementById("comprar").onclick=()=>{ px("InitiateCheckout"); /* versão final: abrir o checkout da Kiwify */ };
+  document.getElementById("comprar").onclick=()=>{ px("InitiateCheckout"); setTimeout(()=>{ window.location.href = KIWIFY; }, 350); /* dá tempo do Pixel registrar */ };
   window.scrollTo(0,0);
 }
 
