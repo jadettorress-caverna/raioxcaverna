@@ -281,6 +281,12 @@ textarea:focus{outline:none;border-color:var(--ouro)}
 .fim-plano-txt{font-family:var(--f-tit);font-stretch:72%;font-weight:850;font-size:clamp(26px,7vw,34px);line-height:1.1;margin:0;text-wrap:balance}
 .fim-plano-txt em{display:block;font-family:var(--f-voz);font-style:italic;font-weight:400;font-stretch:100%;color:var(--ouro-escuro)}
 .fim-plano .preco-linha{color:var(--muted)}
+
+/* título do plano [Jade, 12/10]: nome em branco + "seu plano de ação está liberado." em dourado; apoio em branco com só "entrar na Caverna" em dourado */
+.liberado{font-size:clamp(36px,10vw,50px);margin-top:12px;color:var(--creme)}
+.liberado em{font-family:var(--f-voz);font-style:italic;font-weight:400;font-stretch:100%;color:var(--ouro)}
+.opcoes-txt{margin:16px 0 0;font-size:18px;line-height:1.5;color:var(--creme);max-width:60ch}
+.opcoes-txt b{color:var(--ouro);font-weight:700}
 </style>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1324461267723336&ev=PageView&noscript=1" alt=""></noscript>
 </head>
@@ -637,7 +643,8 @@ function plano(){
   app.innerHTML=`<section class="fecho fecho-topo"><div class="fecho-in">
     <div class="topo-escuro"><span>Seu plano fica salvo neste link. Volte quando quiser.</span><button class="link" id="ver-raiox">Ver o meu Raio-X</button></div>
     <span class="kicker">Raio-X da Metodologia · o caminho</span>
-    <p class="norte"><b>${comNome("agora você tem duas opções.")}</b> Seguir este plano sozinha, ou entrar na Caverna e ter todo o direcionamento para a sua metodologia trabalhar por você.</p>
+    <h1 class="liberado">${NOME ? esc(NOME) + "," : ""} <em>${NOME ? "seu" : "Seu"} plano de ação está liberado.</em></h1>
+    <p class="opcoes-txt">Agora você tem duas opções: seguir sozinha ou <b>entrar na Caverna</b> e ter todo o direcionamento para a sua metodologia trabalhar por você.</p>
     <div class="video v3"><video id="v3v" src="../video/raio-x-video-3.mp4" poster="../video/raio-x-video-3-capa.jpg" playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture></video><button class="som" id="som3" type="button" aria-label="Assistir ao vídeo"><span class="som-ico" aria-hidden="true"></span></button></div>
     ${desejo}
     <button class="btn" type="button" id="comprar">Quero a Caverna Azul</button>
