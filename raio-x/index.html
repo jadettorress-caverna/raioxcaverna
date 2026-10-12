@@ -271,7 +271,10 @@ textarea:focus{outline:none;border-color:var(--ouro)}
 .teste-img{margin-top:14px;text-align:left}
 
 /* plano: o bloco do vídeo 3 sobe para logo depois do título */
-.fecho.fecho-topo{margin-top:24px}
+.fecho.fecho-topo{margin-top:0;padding-top:16px}
+/* a página do plano abre no escuro: um título só, o do caminho; o plano vem depois, no claro */
+.topo-escuro{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 14px;font-size:13px;color:var(--suave);border-bottom:1px solid var(--linha-esc);padding-bottom:12px;margin-bottom:26px}
+.topo-escuro .link{color:var(--suave);margin:0;padding:0;font-size:13px}
 .preco-linha{margin:10px 0 0;text-align:center;font-size:14px;color:var(--suave)}
 .role{margin:22px 0 0;text-align:center;font-family:var(--f-voz);font-style:italic;font-size:18px;color:var(--ouro)}
 .fim-plano{margin-top:48px;padding-top:28px;border-top:1px solid var(--line);text-align:center}
@@ -629,18 +632,9 @@ function plano(){
   const desejo = R.qd!==undefined ? `<p class="campos"><b>${comNome("você quer mais tempo para " + ["crescer a sua marca pessoal nas redes sociais","criar novos produtos e funis de venda","estudar estratégias para crescer o seu negócio"][R.qd] + ".")}</b> Quando a sua metodologia trabalha por você, esse tempo aparece.</p>` : "";
   const PRECO = `<p class="preco-linha">R$397 ou 12x de R$41,06 · garantia de 7 dias</p>`;
   /* ordem [Jade, 12/10]: título → vídeo 3 (oferta) → as 6 ações → oferta de novo no fim */
-  app.innerHTML=`<div class="wrap">
-    ${topoResultado("plano")}
-    <button class="link" id="ver-raiox" style="margin:14px 0 0">Ver o meu Raio-X</button>
-    <section class="res-hero tela" style="padding-top:20px">
-      <span class="kicker">Raio-X da Metodologia</span>
-      <h1>${comNome("aqui está o seu <em>plano de ação.</em>")}</h1>
-      <p class="plano-intro">O seu plano segue as etapas que eu já validei com mais de 200 mentoradas, de vários nichos. Cada ação encaixa uma peça da sua metodologia.</p>
-    </section>
-  </div>
-
-  <section class="fecho fecho-topo"><div class="fecho-in">
-    <span class="kicker">O caminho</span>
+  app.innerHTML=`<section class="fecho fecho-topo"><div class="fecho-in">
+    <div class="topo-escuro"><span>Seu plano fica salvo neste link. Volte quando quiser.</span><button class="link" id="ver-raiox">Ver o meu Raio-X</button></div>
+    <span class="kicker">Raio-X da Metodologia · o caminho</span>
     <p class="norte"><b>${comNome("agora você tem duas opções.")}</b> Seguir este plano sozinha, ou entrar na Caverna e ter todo o direcionamento para a sua metodologia trabalhar por você.</p>
     <div class="video v3"><video id="v3v" src="../video/raio-x-video-3.mp4" poster="../video/raio-x-video-3-capa.jpg" playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture></video><button class="som" id="som3" type="button" aria-label="Assistir ao vídeo"><span class="som-ico" aria-hidden="true"></span></button></div>
     ${desejo}
@@ -650,8 +644,12 @@ function plano(){
   </div></section>
 
   <div class="wrap">
-    <section class="secao" style="padding-top:36px">
+    <section class="res-hero tela" style="padding-top:40px">
       <span class="kicker">As suas 6 ações</span>
+      <h1>${comNome("aqui está o seu <em>plano de ação.</em>")}</h1>
+      <p class="plano-intro">O seu plano segue as etapas que eu já validei com mais de 200 mentoradas, de vários nichos. Cada ação encaixa uma peça da sua metodologia.</p>
+    </section>
+    <section class="secao" style="padding-top:20px">
       <ol class="trilha">${etapas().map((e,i)=>`
         <li class="etapa"><span class="no" style="--f:${(i+1)/6*360}deg" aria-hidden="true"></span>
           <div class="meta"><span>Ação ${i+1}</span></div>
