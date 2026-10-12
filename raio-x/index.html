@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Raio-X da Metodologia · Jade Torres</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Serif:ital@0;1&display=swap">
+<!-- Meta Pixel · "Pixel - Jade Oficial" (1324461267723336), escolhido pela Jade em 10/10 -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','1324461267723336');
+fbq('track','PageView');
+/* registra um evento no Pixel sem nunca travar a página */
+function px(ev,custom){ try{ if(window.fbq){ custom ? fbq('trackCustom',ev) : fbq('track',ev); } }catch(e){} }
+</script>
+<style>
+html,body{margin:0}
+/* Layout: uma coluna estreita de celular. Perguntas no escuro (a caverna), resultado se abre no claro (a luz do raio-x). */
+:root{
+  --noite:#0B0809; --noite-2:#161012; --linha-esc:#2B2225;
+  --creme:#F2EADF; --suave:#A89A92;
+  --destaque:#1E43B0; --destaque-vivo:#4A70DD;
+  --ouro:#C9A24A; --ouro-escuro:#8A6A1E; --solto:#9A3B2E;
+  --luz:#F2E9DE; --luz-2:#E9DDD0; --tinta:#1C1416; --tinta-suave:#6F605B; --linha-clara:#D8C9BB;
+  --f-tit:"Archivo","Arial Narrow",Impact,sans-serif;
+  --f-txt:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-voz:"Instrument Serif",Georgia,"Times New Roman",serif;
+  color-scheme:dark;
+}
+/* tokens de superfície ficam no body, para acompanhar a troca preto/azul */
+body{ --bg:var(--noite); --fg:var(--creme); --muted:var(--suave); --line:var(--linha-esc); --card:var(--noite-2) }
+body.luz{ --bg:var(--luz); --fg:var(--tinta); --muted:var(--tinta-suave); --line:var(--linha-clara); --card:var(--luz-2); color-scheme:light }
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-txt);font-size:17px;line-height:1.5;transition:background .6s ease,color .6s ease;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+.wrap{max-width:540px;margin:0 auto;padding-inline:20px;padding-block:0 48px}
+
+/* faixa do público (só na abertura, igual à página do vídeo) */
+.publico{color:var(--ouro);border-bottom:1px solid var(--line);font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:11px 16px}
+/* rodapé: assinatura e, no rascunho, o atalho de revisão */
+.rodape{margin-top:44px;text-align:center;display:grid;gap:6px}
+.rodape .assin{margin:0}
+.rascunho{font-size:11px;letter-spacing:.06em;color:var(--muted);margin:0}
+.rascunho b{color:var(--ouro);font-weight:700;letter-spacing:.14em}
+/* uma tela, um eixo: capas (abertura e "pronto") centralizadas; perguntas à esquerda */
+.capa{text-align:center}
+.capa .lead{margin-inline:auto;max-width:31ch;font-size:16px;line-height:1.55;text-wrap:balance}
+.capa h1 em{display:block}
+@media (max-width:420px){.publico{font-size:11px;letter-spacing:.1em;padding-inline:10px}}
+.q .btn{margin-left:0}
+.q .link{margin-left:0}
+.q .premio-linha{justify-content:flex-start}
+/* lembrete do prêmio, embaixo de cada pergunta */
+.premio-linha{display:flex;align-items:center;justify-content:center;gap:8px;margin:26px 0 0;font-size:13px;color:var(--muted)}
+.rascunho .link{display:inline;padding:0;margin:0;font-size:11px}
+
+/* topo do quiz */
+.topo{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:18px 10px;min-height:56px}
+.voltar{background:none;border:0;padding:6px 0;color:var(--muted);font-size:14px;cursor:pointer}
+.voltar:focus-visible,.opc:focus-visible,.btn:focus-visible,.link:focus-visible{outline:2px solid var(--ouro);outline-offset:3px}
+.contador{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.06em}
+.barra{height:2px;background:var(--line);position:relative}
+.barra i{position:absolute;inset:0 auto 0 0;background:var(--ouro);transition:width .4s ease}
+
+.tela{padding-block:28px 12px;animation:entra .35s ease both}
+@keyframes entra{from{opacity:.0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--ouro);font-weight:600}
+body.luz .kicker{color:var(--ouro-escuro)}
+h1,h2,h3{font-family:var(--f-tit);font-stretch:72%;font-weight:850;letter-spacing:-.01em;line-height:1.02;margin:0;text-wrap:balance}
+h1{font-size:clamp(40px,11vw,56px)}
+h2{font-size:clamp(28px,7.5vw,36px)}
+.pergunta{font-size:clamp(28px,7.6vw,36px);margin-top:12px}
+.ajuda{color:var(--muted);margin:14px 0 0;font-size:15px;max-width:60ch}
+.lead{color:var(--muted);margin:18px 0 0;max-width:60ch}
+
+.opcoes{display:grid;gap:10px;margin-top:28px}
+.opc{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);padding:16px 18px;cursor:pointer;transition:border-color .15s,background .15s;font-size:17px}
+.opc small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.opc:hover{border-color:var(--suave)}
+.opc.sel{border-color:var(--ouro);background:color-mix(in srgb,var(--ouro) 10%,var(--noite-2))}
+
+textarea{width:100%;margin-top:24px;min-height:130px;background:var(--card);border:1px solid var(--line);color:var(--fg);font-family:var(--f-voz);font-size:22px;line-height:1.3;padding:16px;resize:vertical}
+textarea::placeholder{color:#6d625d;font-style:italic}
+textarea:focus{outline:none;border-color:var(--ouro)}
+
+.btn{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:12px;width:fit-content;max-width:100%;min-height:58px;margin:28px auto 0;padding:18px 34px;border:0;border-radius:16px;color:#FBF4EC;
+  background:linear-gradient(135deg,var(--destaque-vivo) 0%,var(--destaque) 48%,#132E86 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -2px 0 rgba(5,15,50,.4),0 14px 30px -12px rgba(74,112,221,.6);
+  font-family:var(--f-tit);font-stretch:85%;font-weight:800;font-size:18px;letter-spacing:.02em;text-transform:uppercase;text-align:center;cursor:pointer;
+  transition:transform .18s cubic-bezier(.16,1,.3,1),box-shadow .18s cubic-bezier(.16,1,.3,1)}
+/* o raio de luz que atravessa o botão a cada 4 s (igual à página do vídeo) */
+.btn::after{content:"";position:absolute;top:0;bottom:0;left:-70%;width:46%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.45) 50%,transparent);transform:skewX(-14deg);animation:raio-btn 4.2s cubic-bezier(.16,1,.3,1) infinite;pointer-events:none}
+@keyframes raio-btn{0%{left:-70%}45%,100%{left:130%}}
+.btn:hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -2px 0 rgba(5,15,50,.45),0 24px 48px -14px rgba(74,112,221,.7)}
+.btn:active{transform:translateY(0)}
+.link{background:none;border:0;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:14px;padding:12px 0;display:block;margin:6px auto 0}
+
+/* abertura */
+.abre{padding-top:56px}
+.abre h1 em{font-family:var(--f-voz);font-style:italic;font-weight:400;font-stretch:100%;color:var(--ouro)}
+.selo{width:17px;height:17px;color:var(--ouro);flex:none}
+
+/* escaneando */
+.scan{position:fixed;inset:0;background:var(--noite);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:50;overflow:hidden}
+.scan p{font-family:var(--f-tit);font-stretch:75%;font-weight:800;font-size:28px;text-transform:uppercase;letter-spacing:.02em;margin:0}
+.scan small{color:var(--suave)}
+.scan .raio{position:absolute;left:0;right:0;height:2px;background:var(--ouro);box-shadow:0 0 24px 6px rgba(201,162,74,.45);animation:raio 1.1s ease-in-out infinite alternate}
+@keyframes raio{from{top:12%}to{top:88%}}
+
+/* RESULTADO */
+.salvo{font-size:13px;color:var(--muted);border-bottom:1px solid var(--line);padding-block:12px;display:flex;gap:8px;align-items:center}
+/* barra "quase lá": 80% completa, falta o plano */
+.quase{padding-block:14px 4px}
+.quase-txt{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--muted)}
+.quase-txt b{color:var(--ouro-escuro);letter-spacing:.14em;text-transform:uppercase;font-size:12px}
+.quase-barra{height:6px;background:var(--linha-clara);border-radius:3px;margin-top:8px;overflow:hidden}
+.quase-barra i{display:block;height:100%;width:80%;background:var(--cor-quase,#E8833A);border-radius:3px;transition:background .3s}
+.salvo::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ouro);flex:none}
+.res-hero{padding-block:40px 8px}
+.res-hero h1{font-size:clamp(42px,12vw,60px);margin-top:12px}
+.res-hero h1 em{font-family:var(--f-voz);font-style:italic;font-weight:400;font-stretch:100%;color:var(--ouro-escuro)}
+.secao{padding-block:44px 0}
+.secao>.kicker{display:block;margin-bottom:10px}
+.sub{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:34px 0 14px}
+
+/* pontas soltas */
+.pontas{display:flex;flex-wrap:wrap;gap:14px 12px;padding:22px 16px;border:1px dashed var(--linha-clara);background:color-mix(in srgb,var(--luz-2) 60%,var(--luz))}
+.ponta{display:inline-flex;align-items:center;padding:10px 12px 12px;font-size:15px;line-height:1.25;color:#1C1416;border-radius:2px;box-shadow:0 1px 1px rgba(0,0,0,.08),0 6px 12px -6px rgba(60,40,20,.35)}
+.ponta.perfil{background:#FBF4E6;outline:1.5px solid var(--ouro-escuro);outline-offset:-1.5px}
+.cores i.cor-perfil{background:#FBF4E6;outline:1.5px solid var(--ouro-escuro);outline-offset:-1.5px}
+.ponta.verde{background:#CFE8A6}
+.ponta.amarelo{background:#F7E27C}
+.ponta.rosa{background:#F5B9C6}
+.cores{display:flex;flex-wrap:wrap;gap:6px 16px;margin:12px 0 0;font-size:13px;color:var(--muted)}
+.cores span{display:inline-flex;align-items:center;gap:6px}
+.cores i{width:12px;height:12px;border-radius:2px;display:inline-block}
+.ponta:nth-child(3n+1){transform:rotate(-1.4deg) translateY(2px)}
+.ponta:nth-child(3n+2){transform:rotate(1.1deg) translateY(-3px)}
+.ponta:nth-child(4n){transform:rotate(-.6deg) translateY(4px)}
+.legenda{font-size:14px;color:var(--muted);margin:10px 0 0}
+
+.soltos{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.soltos li{display:grid;grid-template-columns:22px 1fr;gap:12px;align-items:start;font-size:18px;line-height:1.4}
+.soltos li>*{min-width:0}
+.soltos .marca{width:14px;height:14px;border-radius:2px;margin-top:6px;box-shadow:0 2px 4px -2px rgba(60,40,20,.4)}
+.marca.perfil{background:transparent;border:2px solid var(--ouro-escuro);transform:rotate(45deg);border-radius:1px}
+.marca.verde{background:#CFE8A6}.marca.amarelo{background:#F7E27C}.marca.rosa{background:#F5B9C6}
+.juntas{font-family:var(--f-voz);font-style:italic;font-size:24px;color:var(--muted);margin:10px 0 0}
+.res-hero h1 em{display:inline}
+/* alerta: um pulso suave, não pisca-pisca */
+.alerta{display:flex;align-items:center;gap:12px}
+.pulso{width:14px;height:14px;border-radius:50%;background:var(--solto);flex:none;animation:pulso 1.8s ease-out infinite}
+@keyframes pulso{0%{box-shadow:0 0 0 0 rgba(154,59,46,.55)}80%,100%{box-shadow:0 0 0 12px rgba(154,59,46,0)}}
+.soltos q{font-family:var(--f-voz);font-style:italic;font-size:1.12em}
+
+.momento{border-top:2px solid var(--tinta);padding-top:16px}
+.momento h3{font-size:28px}
+.momento p{margin:10px 0 0;color:var(--muted);max-width:60ch}
+
+/* plano: linha do tempo que conecta */
+.plano-intro{color:var(--muted);margin:12px 0 0;max-width:60ch}
+.trilha{list-style:none;margin:30px 0 0;padding:0;position:relative}
+.trilha::before{content:"";position:absolute;left:11px;top:10px;bottom:10px;width:2px;background:var(--ouro-escuro)}
+.etapa{position:relative;padding:0 0 34px 44px}
+.etapa:last-child{padding-bottom:0}
+.no{position:absolute;left:-2px;top:0;width:28px;height:28px;border-radius:50%;border:2px solid var(--ouro-escuro);background:conic-gradient(var(--ouro-escuro) 0 var(--f),var(--luz) var(--f) 360deg)}
+.etapa .meta{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:13px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums}
+.etapa h3{font-size:26px;margin-top:6px}
+.status{display:inline-block;margin-top:10px;font-size:13px;font-weight:600;padding:4px 10px;color:#1C1416;border-radius:2px}
+.status.verde{background:#CFE8A6}.status.amarelo{background:#F7E27C}.status.rosa{background:#F5B9C6}
+.etapa p{margin:12px 0 0;max-width:60ch}
+.tforca{background:none;border:1px solid var(--line);color:var(--muted);font-size:11px;padding:2px 8px;cursor:pointer;margin:4px 2px 0}
+.tforca[aria-pressed="true"]{background:var(--ouro);color:#1C1416;border-color:var(--ouro)}
+.caminhos{display:grid;gap:10px;margin-top:14px}
+.caminhos p{margin:0;font-size:16px;line-height:1.45;padding:12px 14px;border:1px solid var(--linha-clara)}
+.caminhos p b{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+/* "sozinha": borda viva na cor do status, com brilho; "na Caverna": tudo dourado, sem fundo escuro */
+.caminhos .so{background:var(--luz);border-width:2px}
+.caminhos .so.verde{border-color:#7CC24A;box-shadow:0 0 0 4px rgba(124,194,74,.22)}
+.caminhos .so.amarelo{border-color:#E8C21E;box-shadow:0 0 0 4px rgba(232,194,30,.25)}
+.caminhos .so.rosa{border-color:#E57A93;box-shadow:0 0 0 4px rgba(229,122,147,.22)}
+/* "na Caverna": aberto, sem quadro; a frase leva um marca-texto na cor do status */
+.caminhos .cav{border:0;padding:4px 0 0;color:var(--tinta)}
+.caminhos .cav b{color:var(--ouro-escuro)}
+.mt{padding:1px 4px;-webkit-box-decoration-break:clone;box-decoration-break:clone;background:linear-gradient(transparent 14%,var(--mtc) 14%,var(--mtc) 92%,transparent 92%)}
+.mt.verde{--mtc:#CFE8A6}.mt.amarelo{--mtc:#F7E27C}.mt.rosa{--mtc:#F5B9C6}
+.sai{margin-top:12px;font-size:15px;color:var(--muted)}
+.sai b{color:var(--tinta);font-weight:600}
+.provisorio{font-size:13px;color:var(--muted);margin-top:26px;border-left:2px solid var(--ouro);padding-left:10px}
+
+/* fechamento volta ao escuro */
+.fecho{background:var(--noite);color:var(--creme);margin-top:56px;padding:48px 20px 40px}
+.fecho-in{max-width:540px;margin:0 auto}
+.fecho .kicker{color:var(--ouro)}
+.norte{font-family:var(--f-voz);font-style:italic;font-size:clamp(30px,8.4vw,40px);line-height:1.12;margin:14px 0 0;text-wrap:balance;color:var(--ouro)}
+.norte b{font-family:var(--f-tit);font-style:normal;font-stretch:72%;font-weight:850;color:var(--creme)}
+.video{margin-top:30px;aspect-ratio:16/9;max-width:100%;background:#000;border:1px solid var(--linha-esc);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--suave);font-size:14px;text-align:center;padding:12px}
+.play{width:64px;height:64px;border-radius:50%;border:2px solid var(--creme);display:flex;align-items:center;justify-content:center}
+.play::after{content:"";border-left:18px solid var(--creme);border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:5px}
+.leva{list-style:none;margin:26px 0 0;padding:0;display:grid;gap:10px}
+.leva li{display:grid;grid-template-columns:18px 1fr;gap:10px;color:var(--creme)}
+.leva li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ouro);margin-top:9px}
+.preco{margin-top:26px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.preco strong{font-family:var(--f-tit);font-stretch:75%;font-weight:850;font-size:44px;line-height:1}
+.preco span{color:var(--suave);font-size:14px}
+.campos{margin-top:18px;color:var(--suave);font-size:15px;border-top:1px solid var(--linha-esc);padding-top:14px}
+.fecho .btn{margin-top:22px}
+.assin{margin-top:36px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--suave);text-align:center}
+.fecho .link{color:var(--suave)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* capa do vídeo 2, no mesmo estilo da capa do vídeo 1 */
+.video.v2{position:relative;padding:0;overflow:hidden;display:block}
+.capa2{position:absolute;inset:0;background-color:var(--noite);
+  background-image:linear-gradient(rgba(201,162,74,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(201,162,74,.06) 1px,transparent 1px),radial-gradient(120% 90% at 50% 40%,#1a1316 0%,var(--noite) 70%);background-size:22px 22px,22px 22px,100% 100%}
+.capa2-kicker{position:absolute;left:0;right:0;top:8%;text-align:center;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--creme);font-weight:600}
+.capa2-txt{position:absolute;left:0;right:0;top:19%;text-align:center;font-family:var(--f-voz);font-style:italic;font-size:clamp(18px,5.4vw,26px);color:var(--ouro)}
+.capa2-pe{position:absolute;left:0;right:0;bottom:7%;text-align:center;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--creme)}
+.pi2{position:absolute;padding:4px 8px 6px;font-size:clamp(10px,2.7vw,13px);font-weight:600;color:#1C1416;border-radius:2px;transform:rotate(var(--r));box-shadow:0 6px 12px -6px rgba(0,0,0,.7)}
+.pi2.verde{background:#CFE8A6}.pi2.amarelo{background:#F7E27C}.pi2.rosa{background:#F5B9C6}
+.scan2{position:absolute;left:0;right:0;height:2px;background:var(--ouro);box-shadow:0 0 18px 4px rgba(201,162,74,.45);animation:scan2 2.4s ease-in-out infinite alternate}
+@keyframes scan2{from{top:30%}to{top:88%}}
+.play2{position:absolute;left:50%;top:56%;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;
+  background:linear-gradient(135deg,#4A70DD 0%,var(--destaque) 48%,#132E86 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 10px 30px rgba(0,0,0,.5),0 0 0 8px rgba(74,112,221,.25)}
+.play2::after{content:"";position:absolute;left:28px;top:21px;border-left:22px solid #FBF4EC;border-top:14px solid transparent;border-bottom:14px solid transparent}
+
+/* nome no fim do quiz: o mesmo campo com o raio dourado da página de captação */
+.campo-nome{display:grid;gap:8px;justify-items:center;margin-top:24px}
+.campo-nome label{font-family:var(--f-voz);font-style:italic;font-size:22px;color:var(--ouro)}
+@property --giro{syntax:"<angle>";inherits:false;initial-value:0deg}
+.anel{width:100%;max-width:340px;padding:1.5px;border-radius:13px;background:conic-gradient(from var(--giro),var(--line) 0 62%,var(--ouro) 80%,#F3DC9A 86%,var(--line) 94%);animation:gira 2.6s linear infinite}
+.anel.parado{animation:none;background:var(--ouro)}
+@keyframes gira{to{--giro:360deg}}
+.anel input{display:block;width:100%;background:var(--card);border:0;color:var(--fg);font:inherit;font-size:18px;text-align:center;padding:14px 16px;border-radius:12px}
+.anel input:focus{outline:none}
+.anel.erro{background:#E0675A;animation:treme .35s ease}
+@keyframes treme{25%{transform:translateX(-6px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+.falta{color:#E0675A;font-size:15px;font-weight:600;margin:0}
+
+/* vídeo 2 tocando mudo: só a frase, o scanner e o "toque para ouvir" por cima */
+.v2 video,.v3 video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.v3{position:relative;padding:0;overflow:hidden;display:block}
+.privacidade{margin:0;font-size:12px}
+.privacidade a{color:var(--muted)}
+.v2-sobre{position:absolute;inset:0}
+.assista2{display:block;margin-top:26px}
+.v2-sobre[hidden]{display:none}
+.v2-txt{position:absolute;left:0;right:0;top:8%;text-align:center;font-family:var(--f-voz);font-style:italic;font-size:clamp(16px,4.6vw,22px);color:var(--ouro)}
+/* "Toque para ouvir": selo escuro translúcido, borda e play dourados (não compete com os botões azuis nem com a legenda) */
+/* play grande no meio: círculo escuro translúcido, borda e play dourados, pulsando (a frase de cima já diz "assista") */
+.som{position:absolute;left:50%;top:50%;width:78px;height:78px;margin:-39px 0 0 -39px;padding:0;border:2px solid var(--ouro);border-radius:50%;cursor:pointer;
+  background:rgba(11,8,9,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:pulsa 1.8s ease-in-out infinite}
+@keyframes pulsa{0%,100%{box-shadow:0 0 0 0 rgba(201,162,74,.45)}50%{box-shadow:0 0 0 12px rgba(201,162,74,0)}}
+.som-ico{position:absolute;left:30px;top:23px;width:0;height:0;border-left:25px solid var(--ouro);border-top:15px solid transparent;border-bottom:15px solid transparent}
+.capa2[hidden]{display:none}
+.fim2-seta{position:absolute;left:50%;top:44%;width:36px;height:20px;margin-left:-18px;clip-path:polygon(0 0,50% 64%,100% 0,100% 34%,50% 100%,0 34%);
+  background:linear-gradient(100deg,var(--ouro) 0 38%,#FFF1C2 50%,var(--ouro) 62% 100%);background-size:300% 100%;animation:seta2 1.4s ease-in-out infinite,brilho2 2.6s linear infinite}
+@keyframes seta2{0%,100%{translate:0 0}50%{translate:0 8px}}
+@keyframes brilho2{from{background-position:100% 0}to{background-position:-200% 0}}
+
+/* TESTE: respostas com ilustração (traço dourado) */
+.opc.com-img{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;padding:12px 16px}
+.opc-img svg{width:64px;height:48px;fill:none;stroke:var(--ouro);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block}
+.opc.sel .opc-img svg{stroke:#F3DC9A}
+.opc-txt{min-width:0}
+.teste-img{margin-top:14px;text-align:left}
+</style>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1324461267723336&ev=PageView&noscript=1" alt=""></noscript>
+</head>
+<body>
+
+
+<main id="app"></main>
+
+<script>
+/* O agente coloca o primeiro nome no link (?n=Ana). Sem nome no link, a página só diz "Olá!" (a lead ainda não é guerreira). */
+let nomeLink = "";
+try { nomeLink = (new URLSearchParams(location.search).get("n") || "").trim().slice(0,30); } catch(e) {}
+let NOME, SAUDACAO;
+function defineNome(n){ NOME = n || ""; SAUDACAO = n ? "Olá, " + n + "!" : "Olá!"; }
+/* "Mariana, o seu..." com nome; "O seu..." sem nome */
+const comNome = resto => NOME ? esc(NOME) + ", " + resto : resto.charAt(0).toUpperCase() + resto.slice(1);
+defineNome(nomeLink); /* sem agente o link não traz o nome: ela escreve no fim do quiz (tela "Pronto") */
+const PREMIO = `<p class="premio-linha"><svg class="selo" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.5l2.3 1.7 2.8-.3 1.1 2.6 2.6 1.1-.3 2.8 1.7 2.3-1.7 2.3.3 2.8-2.6 1.1-1.1 2.6-2.8-.3L12 22.5l-2.3-1.7-2.8.3-1.1-2.6-2.6-1.1.3-2.8L1.8 12l1.7-2.3-.3-2.8 2.6-1.1 1.1-2.6 2.8.3z"/><path fill="none" stroke="#1C1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M7.8 12.3l2.8 2.8 5.6-5.8"/></svg>Plano de ação no final</p>`;
+/* rodapé: a assinatura fica; a linha de rascunho sai na versão final */
+const RODAPE = atalho => `<footer class="rodape"><p class="assin">Caverna das Guerreiras · Jade Torres</p><p class="privacidade"><a href="https://jadettorress-caverna.github.io/politicadeprivacidade/" target="_blank" rel="noopener">Política de privacidade</a></p></footer>`;
+const SPN = [{t:"Sim"},{t:"Em parte"},{t:"Ainda não"}];
+const VAL3 = [2,1,0];
+
+const Q = [
+  {id:"q1", bloco:"Seu momento", t:"Como você atua hoje?",
+   o:[{t:"Atendo no um a um",d:"consultas, sessões, atendimentos",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><circle cx="18" cy="14" r="6"/><path d="M7 40q11-20 22 0"/><circle cx="46" cy="14" r="6"/><path d="M35 40q11-20 22 0"/><path d="M27 10h10M29 15h6"/></svg>'},{t:"Já tenho mentoria, grupo ou curso",d:"pacotes de atendimentos, turmas",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><circle cx="32" cy="9" r="5"/><path d="M23 27q9-15 18 0"/><circle cx="13" cy="30" r="4"/><path d="M5 46q8-12 16 0"/><circle cx="32" cy="32" r="4"/><path d="M24 48q8-12 16 0"/><circle cx="51" cy="30" r="4"/><path d="M43 46q8-12 16 0"/></svg>'},{t:"Ainda não atendo",d:"CLT, concursada ou autônoma",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M26 2l6 7 6-7"/><rect x="21" y="9" width="22" height="32" rx="3"/><circle cx="32" cy="20" r="4.5"/><path d="M26 30h12M27 35h10"/></svg>'}]},
+  {id:"q2", bloco:"Seu momento", t:"Há quanto tempo você está nesta área?",
+   o:[{t:"Menos de 3 anos",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M18 44h28M32 44V30"/><path d="M32 32c-8 0-12-6-12-12 8 0 12 6 12 12zM32 28c0-8 5-12 12-12 0 8-5 12-12 12z"/></svg>'},{t:"De 3 a 10 anos",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M18 44h28M32 44V26"/><circle cx="32" cy="17" r="10"/></svg>'},{t:"Mais de 10 anos",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M12 44h40M32 44V24M32 34l-7-5M32 30l7-5"/><path d="M15 24a17 14 0 0 1 34 0 6 6 0 0 1-4 9H19a6 6 0 0 1-4-9z"/></svg>'}]},
+  {id:"q4", bloco:"Suas pontas", ajuda:"Porquê: o que você viveu e que hoje te move a fazer o que faz.", t:"Você consegue dizer, em uma frase, o seu “porquê”?",
+   o:[{t:"Sim, já sei o que me conecta à minha causa",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M6 36H58"/><circle cx="14" cy="36" r="3"/><circle cx="30" cy="36" r="3"/><circle cx="46" cy="36" r="3"/><path d="M52 6l2.6 5.2 5.7.8-4.1 4 1 5.7-5.2-2.7-5.2 2.7 1-5.7-4.1-4 5.7-.8z"/></svg>'},{t:"Tenho dúvidas sobre qual causa quero defender",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M6 36H58"/><circle cx="14" cy="36" r="3"/><circle cx="30" cy="36" r="3"/><circle cx="46" cy="36" r="3"/><path d="M27 12a5 5 0 1 1 7 4.6c-2 1-2 2-2 4.4M32 25.5v.5"/></svg>'},{t:"Ainda não parei para pensar nisso",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M6 36H58" stroke-dasharray="3 4"/><circle cx="14" cy="36" r="3" stroke-dasharray="3 4"/><circle cx="30" cy="36" r="3" stroke-dasharray="3 4"/><circle cx="46" cy="36" r="3" stroke-dasharray="3 4"/></svg>'}]},
+  {id:"q5", bloco:"Suas pontas", t:"Você já escolheu um assunto principal que te diferencia de quem faz o mesmo que você?",
+   o:[{t:"Sim, falo de um assunto só",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><circle cx="30" cy="26" r="16"/><circle cx="30" cy="26" r="9"/><circle cx="30" cy="26" r="3"/><path d="M30 26L52 6M52 6h-6M52 6v6"/></svg>'},{t:"Estou tentando, mas ainda não consegui escolher",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><circle cx="30" cy="26" r="16"/><circle cx="30" cy="26" r="9"/><path d="M56 6l-9 9M8 6l8 8M58 40l-9-5"/></svg>'},{t:"Não, falo de muitas coisas",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="34" cy="8" r="3"/><circle cx="54" cy="16" r="3"/><circle cx="20" cy="32" r="3"/><circle cx="44" cy="30" r="3"/><circle cx="30" cy="42" r="3"/><circle cx="56" cy="40" r="3"/></svg>'}]},
+  {id:"q6", bloco:"Suas pontas", ajuda:"Método: o caminho que você usa para levar alguém do problema ao resultado.", t:"A transformação que você gera já tem um passo a passo que alguém percorreria sem você ao lado?",
+   o:[{t:"Sim, já tenho um passo a passo organizado",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M6 42h12V32h12V22h12V12h14"/><path d="M50 6l6 6-6 6"/></svg>'},{t:"Monto um passo a passo diferente para cada cliente",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M6 24h14M20 24c8 0 10-14 22-14h10M20 24c8 0 10 14 22 14h10M20 24h32"/><circle cx="56" cy="10" r="2.5"/><circle cx="56" cy="24" r="2.5"/><circle cx="56" cy="38" r="2.5"/></svg>'},{t:"Ainda não pensei nisso",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M6 40c10 0 10-16 24-16s14-16 26-16" stroke-dasharray="3 4"/></svg>'}]},
+  {id:"qf", bloco:"Suas pontas", ajuda:"Ferramentas: PDFs, exercícios, roteiros, planilhas, apps...", t:"As ferramentas que você usa para aplicar o seu método são suas e estão organizadas?",
+   o:[{t:"Sim, tenho ferramentas próprias e organizadas",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><rect x="10" y="18" width="44" height="24" rx="3"/><path d="M24 18v-6h16v6M10 28h44M32 28v6"/></svg>'},{t:"Tenho algumas, mas estão soltas ou desatualizadas",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M8 40l14-14M18 22a5 5 0 1 0 7 7M38 8l16 16M44 32l12 10"/><rect x="28" y="30" width="10" height="12" rx="2" transform="rotate(-15 33 36)"/></svg>'},{t:"Ainda não tenho ferramentas minhas",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><rect x="10" y="16" width="44" height="26" rx="3" stroke-dasharray="3 4"/><path d="M24 16v-6h16v6" stroke-dasharray="3 4"/></svg>'}]},
+  {id:"q7", bloco:"Suas pontas", t:"Quando você faz a sua oferta, o que você oferece?",
+   o:[{t:"Tenho vários canais de entrega: metodologia gravada, ferramentas, mentorias...",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><rect x="4" y="12" width="16" height="22" rx="2"/><path d="M10 19v8l6-4z"/><rect x="24" y="8" width="16" height="22" rx="2"/><path d="M28 14h8M28 19h8M28 24h5"/><rect x="44" y="12" width="16" height="22" rx="2"/><circle cx="52" cy="20" r="3"/><path d="M47 30q5-8 10 0"/></svg>'},{t:"Apenas encontros, tudo depende de mim",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><circle cx="20" cy="14" r="5"/><path d="M10 40q10-20 20 0"/><circle cx="46" cy="24" r="11"/><path d="M46 17v7l5 3"/></svg>'},{t:"Ainda não tenho uma oferta estruturada",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M8 24L20 12h34v24H20z" stroke-dasharray="3 4"/><circle cx="24" cy="24" r="2.5"/></svg>'}]},
+  {id:"q8", bloco:"Suas pontas", ajuda:"Ingredientes de marca: seus dons, habilidades, experiências, crenças e causa.", t:"Você tem uma linha editorial que comunica todos os seus ingredientes de marca?",
+   o:[{t:"Sim, minha linha editorial está 100% alinhada",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><rect x="8" y="8" width="14" height="14" rx="2"/><rect x="25" y="8" width="14" height="14" rx="2"/><rect x="42" y="8" width="14" height="14" rx="2"/><rect x="8" y="26" width="14" height="14" rx="2"/><rect x="25" y="26" width="14" height="14" rx="2"/><rect x="42" y="26" width="14" height="14" rx="2"/></svg>'},{t:"Acho que minha comunicação ainda está confusa",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M6 30c6-18 12 14 18-4s10 16 14-6 8 12 12-2 6 6 8 0"/></svg>'},{t:"Não tenho uma linha editorial",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M18 6h20l10 10v28H18z" stroke-dasharray="3 4"/><path d="M38 6v10h10" stroke-dasharray="3 4"/></svg>'}]},
+  {id:"qc", bloco:"Suas pontas", ajuda:"Aqui não existe resposta certa ou errada, só o seu momento.", t:"Qual é o principal objetivo da sua produção de conteúdo hoje?",
+   o:[{t:"Vender o meu produto principal",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><rect x="22" y="4" width="20" height="40" rx="4"/><path d="M27 22h10l-1 10h-8zM29 22v-2a3 3 0 0 1 6 0v2"/></svg>'},{t:"Crescer o perfil e o engajamento",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><rect x="22" y="4" width="20" height="40" rx="4"/><path d="M32 32V16M26 22l6-6 6 6"/></svg>'},{t:"Ainda não produzo conteúdo com frequência",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><rect x="22" y="4" width="20" height="40" rx="4"/><rect x="26" y="10" width="12" height="24" rx="1" stroke-dasharray="3 4"/></svg>'}]},
+  {id:"qd", bloco:"O seu futuro", t:"Se a sua metodologia já trabalhasse por você, onde você investiria mais tempo?",
+   o:[{t:"Em crescer a minha marca pessoal nas redes sociais",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><circle cx="24" cy="14" r="6"/><path d="M12 42q12-22 24 0"/><path d="M52 6l2.6 5.2 5.7.8-4.1 4 1 5.7-5.2-2.7-5.2 2.7 1-5.7-4.1-4 5.7-.8z"/></svg>'},{t:"Em criar novos produtos e funis de venda",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M10 8h44L38 26v12l-12 6V26z"/></svg>'},{t:"Em estudar estratégias para crescer o meu negócio",img:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M32 14c-6-5-16-5-22-3v26c6-2 16-2 22 3 6-5 16-5 22-3V11c-6-2-16-2-22 3zM32 14v26"/></svg>'}]}
+];
+
+const EXEMPLO = {q1:0,q2:1,q4:1,q5:2,q6:1,qf:1,q7:1,q8:1,qc:1,qd:0};
+
+let R = {}; let passo = -1;
+/* ilustração em todas as respostas (traço dourado), aprovado pela Jade em 11/10 */
+const IMAGENS = true;
+const app = document.getElementById("app");
+const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function abertura(){
+  passo=-1; document.body.classList.remove("luz");
+  app.innerHTML = `<div class="publico">Exclusivo para especialistas e mentoras</div><div class="wrap"><section class="tela abre capa">
+    <span class="kicker">Raio-X da Metodologia</span>
+    <h1 style="margin-top:14px">${esc(SAUDACAO)} Vamos reunir <em>o que você já tem.</em></h1>
+    <p class="lead">Em 3 minutos, veja quais pontas ainda estão soltas para todo o seu potencial virar uma metodologia que trabalha por você.</p>
+    <button class="btn" id="comecar">Começar meu Raio-X</button>
+    ${PREMIO}
+  </section>${RODAPE(true)}</div>`;
+  document.getElementById("comecar").onclick=()=>{passo=0;pergunta();};
+}
+
+function pergunta(){
+  salva("quiz");
+  const q=Q[passo]; const total=Q.length;
+  let corpo;
+  if(q.aberta){
+    corpo=`<textarea id="txt" placeholder="${esc(q.ph)}" maxlength="160">${esc(R[q.id]||"")}</textarea>
+      <button class="btn" id="seguir">Continuar</button>
+      <button class="link" id="pular">Não sei dizer agora</button>`;
+  } else {
+    const temImg = IMAGENS && q.o.some(o=>o.img);
+    corpo=`<div class="opcoes">${q.o.map((o,i)=>`<button class="opc${R[q.id]===i?" sel":""}${temImg?" com-img":""}" data-i="${i}">${temImg?`<span class="opc-img">${o.img}</span>`:""}<span class="opc-txt">${esc(o.t)}${o.d?`<small>${esc(o.d)}</small>`:""}</span></button>`).join("")}</div>`;
+  }
+  app.innerHTML=`<div class="wrap">
+    <div class="topo"><button class="voltar" id="voltar">← Voltar</button><span class="contador">${passo+1} / ${total}</span></div>
+    <div class="barra"><i style="width:${(passo/total)*100}%"></i></div>
+    <section class="tela q"><span class="kicker">${esc(q.bloco)}</span>
+      <h2 class="pergunta">${esc(q.t)}</h2>${q.ajuda?`<p class="ajuda">${esc(q.ajuda)}</p>`:""}${corpo}${PREMIO}</section>${RODAPE(false)}</div>`;
+  document.getElementById("voltar").onclick=()=>{ if(passo===0) abertura(); else {passo--;pergunta();} };
+  if(q.aberta){
+    const t=document.getElementById("txt");
+    document.getElementById("seguir").onclick=()=>{R[q.id]=t.value.trim();avanca();};
+    document.getElementById("pular").onclick=()=>{R[q.id]="";avanca();};
+  } else {
+    app.querySelectorAll(".opc").forEach(b=>b.onclick=()=>{
+      app.querySelectorAll(".opc").forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
+      R[q.id]=+b.dataset.i; setTimeout(avanca,260);
+    });
+  }
+  window.scrollTo(0,0);
+}
+function avanca(){ passo++; if(passo<Q.length) pergunta(); else pronto(); }
+
+function pronto(){
+  salva("pronto");
+  const pedeNome = !nomeLink; /* com o agente, o nome vem no link e este campo some */
+  app.innerHTML=`<div class="wrap">
+    <div class="topo"><button class="voltar" id="voltar">← Voltar</button><span class="contador">${Q.length} / ${Q.length}</span></div>
+    <div class="barra"><i style="width:100%"></i></div>
+    <section class="tela abre capa"><span class="kicker">Pronto</span>
+      <h1 style="margin-top:14px">${pedeNome ? "O seu <em style=\"display:inline\">Raio-X</em> está pronto." : comNome("o seu <em style=\"display:inline\">Raio-X</em> está pronto.")}</h1>
+      ${pedeNome ? `<div class="campo-nome">
+        <label for="nome-rx">Seu nome para personalizar</label>
+        <div class="anel" id="anel-rx"><input id="nome-rx" type="text" placeholder="Seu nome" autocomplete="given-name" maxlength="40"></div>
+        <p class="falta" id="falta-rx" role="alert" hidden>Falta o seu nome.</p>
+      </div>` : `<p class="lead">Ele mostra onde você está e o que você precisa construir, na ordem.</p>`}
+      <button class="btn" id="ver">Ver meu Raio-X e plano de ação</button></section></div>`;
+  document.getElementById("voltar").onclick=()=>{passo=Q.length-1;pergunta();};
+  const ver=()=>{
+    if(pedeNome){
+      const c=document.getElementById("nome-rx"), nome=c.value.trim().replace(/\s+/g," ").split(" ")[0];
+      if(!nome){ const a=document.getElementById("anel-rx"); document.getElementById("falta-rx").hidden=false; a.classList.remove("erro"); void a.offsetWidth; a.classList.add("erro"); c.focus(); setTimeout(()=>a.classList.remove("erro"),900); return; }
+      defineNome(nome);
+    }
+    escanear();
+  };
+  document.getElementById("ver").onclick=ver;
+  if(pedeNome){
+    const c=document.getElementById("nome-rx"), a=document.getElementById("anel-rx");
+    c.addEventListener("keydown",e=>{ if(e.key==="Enter") ver(); });
+    c.addEventListener("input",()=>{ const tem=!!c.value.trim(); a.classList.toggle("parado",tem); if(tem) document.getElementById("falta-rx").hidden=true; });
+  }
+}
+
+function escanear(){
+  px("RaioXConcluido",true);
+  const s=document.createElement("div"); s.className="scan";
+  s.innerHTML=`<div class="raio"></div><p>Montando o seu Raio-X</p><small>Ligando as suas respostas às etapas</small>`;
+  document.body.appendChild(s);
+  const rm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  setTimeout(()=>{s.remove();resultado();},rm?300:2200);
+}
+
+/* ---------- regras do diagnóstico ---------- */
+function v3(id){ return VAL3[R[id]] ?? 0; }
+function palavras(){ return (R.q10||"").replace(/[.!\s]+$/,"").slice(0,140); }
+const EXP = ["pouco tempo","3 a 10 anos","mais de 10 anos"];
+
+/* Cada resposta vira um post-it. A cor mostra o momento: verde = já tem · amarelo = em parte · rosa = ainda solto */
+const POSTIT = {
+  q4:["Sei o meu porquê","Porquê ainda em dúvida","Porquê ainda não pensado"],
+  q5:["Assunto principal escolhido","Assunto principal em escolha","Fala de muitos assuntos"],
+  q6:["Método com passo a passo","Um caminho diferente para cada cliente","Método ainda não pensado"],
+  qf:["Ferramentas próprias e organizadas","Ferramentas soltas","Ainda sem ferramentas próprias"],
+  q7:["Vários canais de entrega","Entrega que depende de você","Oferta ainda não estruturada"],
+  q8:["Linha editorial alinhada","Comunicação ainda confusa","Sem linha editorial"],
+  qc:["Conteúdo que leva à venda","Conteúdo para crescer o perfil","Pouca produção de conteúdo"]
+};
+const COR = ["rosa","amarelo","verde"]; /* índice = valor (0, 1, 2) */
+function pontas(){
+  const p=[];
+  p.push(["perfil",["Menos de 3 anos na sua área","De 3 a 10 anos na sua área","Mais de 10 anos na sua área"][R.q2]]);
+  if(R.q1===0) p.push(["perfil","Atende no um a um"]);
+  if(R.q1===1) p.push(["perfil","Mentoria, grupo ou curso"]);
+  if(R.q1===2) p.push(["perfil","CLT, concursada ou autônoma"]);
+  Object.keys(POSTIT).forEach(id=>{ if(R[id]!==undefined) p.push([COR[v3(id)], POSTIT[id][R[id]]]); });
+  return p.filter(x=>x[1]).map(([c,t])=>`<span class="ponta ${c}">${esc(t)}</span>`).join("");
+}
+
+/* Pontos de atenção: uma frase para cada ingrediente amarelo (em parte) ou rosa (ainda solto). Mostra o cuidado, nunca condena. */
+const ATENCAO = {
+  q4:["Você ainda não olhou para o seu porquê. É dele que nasce o seu lugar de fala.",
+      "O seu porquê ainda está em dúvida. Sem ele claro, a sua autoridade fica sem raiz."],
+  q5:["Você fala de muitos assuntos. Isso dilui a sua autoridade e dificulta que te escolham.",
+      "O seu assunto principal ainda está em escolha. Enquanto ele não se decide, quem te vê não sabe por que lembrar de você."],
+  q6:["O seu passo a passo ainda não foi desenhado. Sem ele, a transformação que você gera depende de você estar presente.",
+      "Você monta um caminho diferente para cada cliente. É isso que deixa o trabalho pesado e preso à sua agenda."],
+  qf:["Você ainda não tem ferramentas próprias. São elas que deixam o seu método único e fácil de aplicar.",
+      "As suas ferramentas estão soltas. Organizadas, elas fazem parte do trabalho por você."],
+  q7:["A sua oferta ainda não está estruturada. Sem ela, fica difícil alguém dizer sim.",
+      "Hoje, tudo o que você oferece depende de você. Cada nova cliente é mais uma hora da sua agenda."],
+  q8:["Você ainda não tem uma linha editorial. Sem ela, o que você publica não conta a sua história.",
+      "A sua comunicação ainda está confusa. Quem chega até você pode não entender o que você entrega."],
+  qc:["A sua produção de conteúdo ainda é pouca. Quase ninguém vê o que você sabe fazer.",
+      "Você já tem desenvoltura para produzir conteúdo. O próximo passo é ele alcançar o seu público ideal e levar pessoas qualificadas até o que você vende."]
+};
+/* Perfil e desejo também ganham ponto de atenção (alguns positivos) [Jade, 12/10]: um por resposta, marca dourada */
+const ATENCAO_PERFIL = {"q1": ["Você atende no um a um. Cada nova cliente é mais uma hora da sua agenda e mais um peso nos seus ombros.", "Você já tem um programa, mas, se o seu método não está gravado e com vários canais de entrega, ele continua dependendo de você em cada etapa.", "Hoje o seu tempo constrói o sonho de outra pessoa. O que você sabe ainda não está trabalhando pelo seu propósito."], "q2": ["Você está há pouco tempo na área, e isso não é um problema. Na internet, o que conta não é o certificado, e sim aquilo que você nasceu pronta para fazer.", "São anos resolvendo problemas que muita gente não consegue resolver. Sem uma metodologia, esse conhecimento fica guardado só com você.", "Mais de 10 anos de experiência é muita coisa guardada na gaveta. Sem uma metodologia, tudo o que você já sabe resolver continua preso a você."], "qd": ["Você quer tempo para crescer a sua marca pessoal. Esse tempo aparece quando a sua metodologia passa a trabalhar por você.", "Você quer criar novos produtos e funis. Todo produto novo nasce mais fácil de uma metodologia organizada.", "Você quer tempo para estudar e crescer o seu negócio. Esse tempo aparece quando a entrega deixa de depender só de você."]};
+function atencao(){
+  const out=[];
+  const perfil = id => { if(R[id]!==undefined) out.push(["perfil",ATENCAO_PERFIL[id][R[id]]]); };
+  perfil("q1"); perfil("q2");
+  const antes=out.length;
+  Object.keys(ATENCAO).forEach(id=>{ const v=v3(id); if(R[id]!==undefined && v<2) out.push([COR[v],ATENCAO[id][v]]); });
+  if(out.length===antes) out.push(["verde","Todas as partes da sua metodologia estão de pé. O ponto de atenção agora é conectá-las num caminho só."]);
+  perfil("qd");
+  return out.map(([c,t])=>`<li><i class="marca ${c}" aria-hidden="true"></i><span>${t}</span></li>`).join("");
+}
+
+/* Resultado do Raio-X: a promessa é uma só ("uma metodologia que trabalha por você"); muda só o reconhecimento do momento dela */
+function momento(){
+  if(R.q1===1) return ["Você está pronta para fazer a sua metodologia trabalhar por você.","Você já tem um programa, mas ele ainda funciona como o um a um e depende de você em cada etapa. O próximo passo é separar a mentora da metodologia."];
+  if(R.q1===2) return ["Você está pronta para transformar o que sabe em uma metodologia que trabalha por você.","Você quer viver do que sabe, mas ainda não escolheu como vai atuar. O próximo passo é decidir de onde você fala e para quem."];
+  return ["Você está pronta para transformar os seus atendimentos em uma metodologia que trabalha por você.","Você vende o seu tempo e carrega cada cliente no colo. O próximo passo é o seu conhecimento trabalhar além da sua agenda."];
+}
+
+/* Plano: 6 ações. A etiqueta usa as cores dos post-its; a bolinha de cada ação vai se completando (1/6 ... 6/6). */
+const STATUS = ["Ainda não definido","Ainda falta clareza","Já está definido"];
+/* rascunho: força todas as ações num momento só, para revisar os textos (sai na versão final) */
+let FORCA = null;
+/* Cada ação tem 3 versões, pelo momento dela: [rosa: descobrir/começar, amarelo: ter clareza/escolher, verde: confirmar].
+   "Sozinha" dá uma direção em uma frase (nunca o passo a passo); "na Caverna" mostra a ferramenta. */
+function etapas(){
+  const m=Math.min(v3("q6"),v3("qf"));
+  const A=[
+    {n:"Ter clareza do seu lugar de fala", s:v3("q4"),
+     so:["Faça um mergulho na sua história desde a infância e descubra os momentos que conectam você a uma causa.",
+         "Faça um mergulho na sua história desde a infância e encontre os momentos que conectam você à sua causa.",
+         "Faça um mergulho na sua história desde a infância para confirmar os momentos que conectam você à sua causa."],
+     cav:["Use a Linha do Tempo do app Caverna Azul para descobrir, pergunta por pergunta, o lugar de fala que vai sustentar a sua autoridade.",
+          "Use a Linha do Tempo do app Caverna Azul para ter clareza, pergunta por pergunta, do lugar de fala que sustenta a sua autoridade.",
+          "Use a Linha do Tempo do app Caverna Azul para confirmar, com a sua própria história, o lugar de fala que sustenta a sua autoridade."]},
+    {n:"Ter clareza do seu posicionamento", s:v3("q5"),
+     so:["Olhe para tudo o que você sabe e escolha um único assunto para ser lembrada por ele.",
+         "Entre os assuntos que você está considerando, escolha um único para ser lembrada por ele.",
+         "Revise o seu assunto principal e confirme se ele te diferencia de quem faz o mesmo que você."],
+     cav:["Use o Sprint de Decisões do app Caverna Azul para escolher o seu assunto principal e ser lembrada como referência nele.",
+          "Use o Sprint de Decisões do app Caverna Azul para montar o seu Canvas de Manifesto e desenhar o seu posicionamento único.",
+          "Use o Sprint de Decisões do app Caverna Azul para confirmar o seu assunto principal no seu Canvas de Manifesto e ser lembrada como referência nele."]},
+    {n:"Organizar o seu método autoral e as suas ferramentas", s:m,
+     so:["Observe como você ajuda as pessoas e anote o caminho que se repete, do problema ao resultado.",
+         "Compare os caminhos que você monta para cada cliente e encontre o que se repete em todos.",
+         "Revise o seu método e as suas ferramentas e confirme se alguém alcançaria a sua transformação sem você 100% presente."],
+     cav:["Use as ferramentas de Método Autoral do app Caverna Azul para criar o passo a passo do seu método e replicar o mesmo caminho com dezenas de pessoas ao mesmo tempo.",
+          "Use as ferramentas de Método Autoral do app Caverna Azul para padronizar o passo a passo do seu método e replicar o mesmo caminho com dezenas de pessoas ao mesmo tempo.",
+          "Use as ferramentas de Método Autoral do app Caverna Azul para confirmar se o seu método está 100% alinhado, validado e gravado, pronto para dezenas de pessoas ao mesmo tempo."]},
+    {n:"Definir a oferta principal do seu método", s:v3("q7"),
+     so:["Decida o que a sua oferta entrega sem depender 100% da sua hora, com um valor à altura da transformação que você gera.",
+         "Olhe para a sua entrega de hoje e decida o que pode ser ofertado sem depender 100% da sua hora, valendo 5x mais que o seu atendimento.",
+         "Revise os seus canais de entrega e confirme se a sua oferta está favorável à sua rotina como mentora no digital."],
+     cav:["Use as ferramentas de Produtos do Método do app Caverna Azul para transformar o seu método numa oferta que vende sem que cada entrega dependa da sua hora.",
+          "Use as ferramentas de Produtos do Método do app Caverna Azul para tirar de você o peso da entrega e vender sem que tudo dependa da sua hora.",
+          "Use as ferramentas de Produtos do Método do app Caverna Azul para confirmar cada canal de entrega que nasce do seu método e vender sem depender da sua hora."]},
+    {n:"Estruturar a sua linha editorial e a sua produção de conteúdo", s:Math.min(v3("q8"),v3("qc")),
+     so:["Defina o que a sua marca precisa comunicar, e para quem, e crie um ritmo de conteúdo a partir disso.",
+         "Revise o que você comunica hoje e defina o que a sua marca precisa dizer, e para quem.",
+         "Revise a sua linha editorial e confirme se ela comunica todos os seus ingredientes de marca."],
+     cav:["Use o app Cubo Mágico de Conteúdo para planejar a sua comunicação e produzir conteúdo que leva pessoas qualificadas até a sua oferta, sem depender de inspiração.",
+          "Use o app Cubo Mágico de Conteúdo para tirar a confusão da sua comunicação e fazer cada conteúdo levar pessoas qualificadas até a sua oferta.",
+          "Use o app Cubo Mágico de Conteúdo para manter a sua produção conectada à sua oferta e levando pessoas qualificadas até ela, sem depender de inspiração."]},
+    {n:"Deixar o seu perfil pronto para a sua audiência", s:v3("q8"),
+     so:["Organize a sua bio, os seus destaques e os seus fixados para que quem chega entenda quem você é e o que você entrega.",
+         "Revise a sua bio, os seus destaques e os seus fixados e ajuste o que ainda não conta a sua marca.",
+         "Revise a sua bio, os seus destaques e os seus fixados e confirme se eles contam a sua marca por inteiro."],
+     cav:["Use a linha editorial construída no app Cubo Mágico para montar a sua bio, os seus destaques e os seus fixados, para que o seu perfil converta quem chega.",
+          "Use a linha editorial construída no app Cubo Mágico para ajustar a sua bio, os seus destaques e os seus fixados, para que o seu perfil converta quem chega.",
+          "Use a linha editorial construída no app Cubo Mágico para alinhar a sua bio, os seus destaques e os seus fixados, para que o seu perfil converta quem chega."]}
+  ];
+  return A.map(a=>{ const st = FORCA===null ? a.s : FORCA; return {n:a.n, s:st, so:a.so[st], cav:a.cav[st]}; });
+}
+
+/* Resultado em duas telas: 1) diagnóstico (vídeo de abertura no topo) → 2) plano de ação (checkmate e oferta) */
+function topoResultado(qual){
+  return qual==="plano"
+    ? `<div class="salvo">Seu plano fica salvo neste link. Volte quando quiser.</div>`
+    : `<div class="quase"><div class="quase-txt"><b>Quase lá</b><span>Falta o seu plano de ação</span></div><div class="quase-barra" aria-hidden="true"><i></i></div></div>`;
+}
+/* o botão de cima desce a página devagar até o botão do plano, passando por tudo o que ela precisa ler */
+function desceDevagar(alvo){
+  const ini=window.scrollY, fim=alvo.getBoundingClientRect().top+window.scrollY-window.innerHeight/2;
+  const dur=matchMedia("(prefers-reduced-motion: reduce)").matches?0:8000, t0=performance.now();
+  let parou=false; const para=()=>{parou=true;};
+  ["wheel","touchstart","keydown"].forEach(ev=>window.addEventListener(ev,para,{once:true,passive:true}));
+  function passo(t){
+    if(parou) return;
+    const k=Math.min(1,dur?(t-t0)/dur:1), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    window.scrollTo(0,ini+(fim-ini)*e);
+    if(k<1) requestAnimationFrame(passo);
+  }
+  requestAnimationFrame(passo);
+}
+function resultado(){ diagnostico(); }
+function diagnostico(){
+  salva("raiox");
+  document.body.classList.add("luz");
+  const [mt,mp]=momento();
+  app.innerHTML=`<div class="wrap">
+    ${topoResultado()}
+    <section class="res-hero tela">
+      <span class="kicker">Raio-X da Metodologia${NOME ? " · " + esc(NOME) : ""}</span>
+      <h1>${comNome("aqui está o seu <em>Raio-X.</em>")}</h1>
+      <p class="juntas">Ele mostra as pontas soltas que ainda impedem a sua metodologia de trabalhar por você.</p>
+    </section>
+    <span class="kicker assista2">Assista à interpretação do seu Raio-X</span>
+    <div class="video v2" id="v2" style="margin-top:10px">
+      <video id="v2v" src="../video/raio-x-video-2.mp4" muted autoplay playsinline preload="auto" controlslist="nodownload noplaybackrate" disablepictureinpicture></video>
+      <div class="v2-sobre" id="v2-sobre">
+        <i class="scan2"></i>
+        <button class="som" id="som" type="button" aria-label="Toque para ouvir"><span class="som-ico" aria-hidden="true"></span></button>
+      </div>
+      <div class="capa2" id="v2-fim" hidden>
+        <span class="capa2-kicker">Raio-X da Metodologia</span>
+        <span class="pi2 verde" style="left:7%;top:28%;--r:-6deg">Porquê</span>
+        <span class="pi2 amarelo" style="right:7%;top:30%;--r:5deg">Método</span>
+        <span class="pi2 rosa" style="left:10%;top:66%;--r:4deg">Oferta</span>
+        <span class="pi2 amarelo" style="right:9%;top:64%;--r:-4deg">Perfil</span>
+        <i class="scan2"></i>
+        <span class="capa2-txt">Agora, leia o seu Raio-X</span>
+        <span class="fim2-seta" aria-hidden="true"></span>
+      </div>
+    </div>
+    <button class="btn" id="analisar">Receber meu plano de ação</button>
+
+    <section class="secao">
+      <span class="kicker">Painel da metodologia</span>
+      <h2>As partes da sua metodologia que merecem mais atenção</h2>
+      <div class="pontas" style="margin-top:18px">${pontas()}</div>
+      <div class="cores"><span><i style="background:#CFE8A6"></i>Você já tem</span><span><i style="background:#F7E27C"></i>Em parte</span><span><i style="background:#F5B9C6"></i>Ainda solto</span><span><i class="cor-perfil"></i>Seu perfil</span></div>
+      <p class="legenda">Cada post-it é uma parte da sua metodologia, a partir das suas respostas.</p>
+
+    </section>
+
+    <section class="secao">
+      <h2 class="alerta"><span class="pulso" aria-hidden="true"></span>O que merece o seu cuidado agora</h2>
+      <p class="legenda" style="margin-top:8px">Uma frase para cada parte que ainda pede ação.</p>
+      <ul class="soltos" style="margin-top:18px">${atencao()}</ul>
+    </section>
+
+    <section class="secao">
+      <span class="kicker">Resultado do seu Raio-X</span>
+      <div class="momento"><h3>${NOME ? esc(NOME) + ", " + esc(mt.charAt(0).toLowerCase() + mt.slice(1)) : esc(mt)}</h3><p>${esc(mp)}</p></div>
+    </section>
+
+    <button class="btn" id="ver-plano">Receber meu plano de ação</button>
+    ${PREMIO}
+    ${RODAPE(false)}
+  </div>`;
+  document.getElementById("ver-plano").onclick=plano;
+  /* vídeo 2: começa mudo (com as legendas); o play dourado volta ao início com som; no fim entra a capa que leva à leitura */
+  const v2=document.getElementById("v2v");
+  v2.muted=true; v2.play().catch(()=>{});
+  document.getElementById("som").onclick=()=>{ document.getElementById("v2-sobre").hidden=true; v2.muted=false; v2.currentTime=0; v2.controls=true; v2.play().catch(()=>{}); };
+  v2.addEventListener("ended",()=>{ v2.controls=false; document.getElementById("v2-sobre").hidden=true; document.getElementById("v2-fim").hidden=false; });
+  document.getElementById("v2-fim").onclick=()=>desceDevagar(document.getElementById("ver-plano"));
+  document.getElementById("analisar").onclick=plano; /* o mesmo botão em cima e embaixo: vai direto ao plano */
+  window.scrollTo(0,0);
+}
+function plano(){
+  salva("plano");
+  px("ViewContent");
+  document.body.classList.add("luz");
+  app.innerHTML=`<div class="wrap">
+    ${topoResultado("plano")}
+    <button class="link" id="ver-raiox" style="margin:14px 0 0">Ver o meu Raio-X</button>
+    <section class="res-hero tela" style="padding-top:20px">
+      <span class="kicker">Raio-X da Metodologia</span>
+      <h1>${comNome("aqui está o seu <em>plano de ação.</em>")}</h1>
+      <p class="plano-intro">O seu plano segue as etapas que eu já validei com mais de 200 mentoradas, de vários nichos. Cada ação encaixa uma peça da sua metodologia.</p>
+    </section>
+
+    <section class="secao" style="padding-top:20px">
+      <ol class="trilha">${etapas().map((e,i)=>`
+        <li class="etapa"><span class="no" style="--f:${(i+1)/6*360}deg" aria-hidden="true"></span>
+          <div class="meta"><span>Ação ${i+1}</span></div>
+          <h3>${e.n}</h3>
+          <span class="status ${COR[e.s]}">${STATUS[e.s]}</span>
+          <div class="caminhos">
+            <p class="so ${COR[e.s]}"><b>${NOME ? esc(NOME) : "Você"} sozinha</b>${e.so}</p>
+            <p class="cav"><b>${NOME ? esc(NOME) : "Você"} na Caverna</b><span class="mt ${COR[e.s]}">${e.cav}</span></p>
+          </div>
+        </li>`).join("")}</ol>
+    </section>
+  </div>
+
+  <section class="fecho"><div class="fecho-in">
+    <span class="kicker">O caminho</span>
+    <p class="norte"><b>${comNome("agora você tem duas opções.")}</b> Seguir este plano sozinha, ou entrar na Caverna e ter todo o direcionamento para a sua metodologia trabalhar por você.</p>
+    <div class="video v3"><video id="v3v" src="../video/raio-x-video-3.mp4" poster="../video/raio-x-video-3-capa.jpg" playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture></video><button class="som" id="som3" type="button" aria-label="Assistir ao vídeo"><span class="som-ico" aria-hidden="true"></span></button></div>
+    ${R.qd!==undefined?`<p class="campos"><b>${comNome("você quer mais tempo para " + ["crescer a sua marca pessoal nas redes sociais","criar novos produtos e funis de venda","estudar estratégias para crescer o seu negócio"][R.qd] + ".")}</b> Quando a sua metodologia trabalha por você, esse tempo aparece.</p>`:""}
+    <ul class="leva">
+      <li>A metodologia da Caverna Azul completa, gravada</li>
+      <li>O app Caverna Azul, com o passo a passo de cada etapa</li>
+      <li>O Cubo Mágico de Conteúdo</li>
+      <li>Os Campos de Batalha e a gravação dos encontros ao vivo</li>
+      <li>Acesso por 1 ano, com as atualizações</li>
+    </ul>
+    <div class="preco"><strong>R$397</strong><span>ou 12x de R$41,06 · garantia de 7 dias</span></div>
+    <button class="btn" type="button" id="comprar">Quero a Caverna Azul</button>
+    <p class="assin">Caverna das Guerreiras · Jade Torres</p>
+  </div></section>`;
+  document.getElementById("ver-raiox").onclick=diagnostico;
+  const v3=document.getElementById("v3v");
+  document.getElementById("som3").onclick=()=>{ document.getElementById("som3").hidden=true; v3.controls=true; v3.play().catch(()=>{}); };
+  document.getElementById("comprar").onclick=()=>{ px("InitiateCheckout"); /* versão final: abrir o checkout da Kiwify */ };
+  window.scrollTo(0,0);
+}
+
+
+/* Progresso guardado no celular dela: abrir o mesmo link volta onde parou.
+   Terminou o quiz e não viu o plano → volta no Raio-X; já viu o plano → volta no plano. */
+function guarda(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function le(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function salva(tela){ guarda("raiox-estado", JSON.stringify({tela, passo, R, nome:NOME})); }
+(function inicia(){
+  let e=null; try{ e=JSON.parse(le("raiox-estado")||"null"); }catch(x){}
+  if(!e || !e.tela){ abertura(); return; }
+  R=e.R||{}; passo=e.passo; if(e.nome) defineNome(e.nome);
+  if(e.tela==="plano") plano();
+  else if(e.tela==="raiox") diagnostico();
+  else if(e.tela==="pronto") pronto();
+  else if(e.tela==="quiz" && passo>=0 && passo<Q.length) pergunta();
+  else abertura();
+})();
+</script>
+
+</body>
+</html>
