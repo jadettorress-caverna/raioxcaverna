@@ -213,7 +213,7 @@ v.addEventListener("error", revela); /* se o vídeo falhar, ninguém fica presa 
 const mensagem = nome => "Olá! Sou a " + nome + " e quero fazer o Raio-X da Metodologia.";
 const campo = document.getElementById("nome"), falta = document.getElementById("falta");
 function quero(){
-  const nome = campo.value.trim().replace(/\s+/g," ");
+  const nome = campo.value.trim().replace(/\s+/g," ").split(" ").map(p => p.charAt(0).toLocaleUpperCase("pt-BR") + p.slice(1).toLocaleLowerCase("pt-BR")).join(" "); /* "jADE maria" vira "Jade Maria" */
   if(!nome){
     const anel = document.getElementById("anel");
     falta.hidden = false; anel.classList.remove("erro"); void anel.offsetWidth; anel.classList.add("erro"); campo.focus();

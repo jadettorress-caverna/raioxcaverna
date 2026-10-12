@@ -335,6 +335,8 @@ const IMAGENS = true;
 const app = document.getElementById("app");
 /* checkout da Caverna Azul (R$397) na Kiwify, enviado pela Jade em 12/10 */
 const KIWIFY = "https://pay.kiwify.com.br/xD0EQQ4";
+/* "jADE" ou "jade" vira "Jade" */
+const bonito = n => n ? n.charAt(0).toLocaleUpperCase("pt-BR") + n.slice(1).toLocaleLowerCase("pt-BR") : n;
 const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 function abertura(){
@@ -398,7 +400,7 @@ function pronto(){
   document.getElementById("voltar").onclick=()=>{passo=Q.length-1;pergunta();};
   const ver=()=>{
     if(pedeNome){
-      const c=document.getElementById("nome-rx"), nome=c.value.trim().replace(/\s+/g," ").split(" ")[0];
+      const c=document.getElementById("nome-rx"), nome=bonito(c.value.trim().replace(/\s+/g," ").split(" ")[0]);
       if(!nome){ const a=document.getElementById("anel-rx"); document.getElementById("falta-rx").hidden=false; a.classList.remove("erro"); void a.offsetWidth; a.classList.add("erro"); c.focus(); setTimeout(()=>a.classList.remove("erro"),900); return; }
       defineNome(nome);
     }
