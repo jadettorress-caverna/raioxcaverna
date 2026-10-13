@@ -193,8 +193,11 @@ function revela(){ if(liberado) return; liberado = true; trancado.hidden = true;
 const mmss = n => "0:" + String(Math.max(0, Math.ceil(n))).padStart(2,"0");
 playbtn.onclick = () => {
   if(!comSom){ comSom = true; v.loop = false; v.muted = false; v.currentTime = 0; document.getElementById("sobre1").hidden = true; }
+  /* o vídeo já estava rodando mudo, então o evento "play" não acontece de novo: some com o play aqui mesmo */
+  playbtn.hidden = true; v.controls = true; if(!liberado) trancado.firstChild.textContent = "Seu Raio-X libera em ";
   v.play().catch(()=>{});
 };
+v.addEventListener("click", () => { if(!comSom) playbtn.click(); }); /* tocar em qualquer parte do vídeo também liga o som */
 v.muted = true; v.play().catch(()=>{}); /* começa mudo, mostrando a Jade */
 v.addEventListener("play", () => { if(!comSom) return; playbtn.hidden = true; v.controls = true; if(!liberado) trancado.firstChild.textContent = "Seu Raio-X libera em "; });
 v.addEventListener("pause", () => { if(comSom && !v.ended) playbtn.hidden = false; });

@@ -233,7 +233,8 @@ textarea:focus{outline:none;border-color:var(--ouro)}
 .campo-nome{display:grid;gap:8px;justify-items:center;margin-top:24px}
 .campo-nome label{font-family:var(--f-voz);font-style:italic;font-size:22px;color:var(--ouro)}
 @property --giro{syntax:"<angle>";inherits:false;initial-value:0deg}
-.anel{width:100%;max-width:340px;padding:1.5px;border-radius:13px;background:conic-gradient(from var(--giro),var(--line) 0 62%,var(--ouro) 80%,#F3DC9A 86%,var(--line) 94%);animation:gira 2.6s linear infinite}
+/* [Jade, 12/10] anel mais visível: mais grosso, arco dourado maior e um brilho em volta */
+.anel{width:100%;max-width:340px;padding:2.5px;border-radius:14px;background:conic-gradient(from var(--giro),rgba(201,162,74,.35) 0 45%,var(--ouro) 68%,#F3DC9A 80%,var(--ouro) 88%,rgba(201,162,74,.35) 97%);box-shadow:0 0 22px -4px rgba(201,162,74,.55);animation:gira 2.6s linear infinite}
 .anel.parado{animation:none;background:var(--ouro)}
 @keyframes gira{to{--giro:360deg}}
 .anel input{display:block;width:100%;background:var(--card);border:0;color:var(--fg);font:inherit;font-size:18px;text-align:center;padding:14px 16px;border-radius:12px}
