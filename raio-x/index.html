@@ -637,7 +637,8 @@ function plano(){
   salva("plano");
   px("ViewContent");
   document.body.classList.add("luz");
-  const desejo = R.qd!==undefined ? `<p class="campos"><b>${comNome("você quer mais tempo para " + ["crescer a sua marca pessoal nas redes sociais","criar novos produtos e funis de venda","estudar estratégias para crescer o seu negócio"][R.qd] + ".")}</b> Quando a sua metodologia trabalha por você, esse tempo aparece.</p>` : "";
+  /* chamada logo acima do botão [Jade, 12/10] */
+  const desejo = `<p class="campos"><b>${comNome("clique no botão abaixo e vem para a Caverna!")}</b></p>`;
   const PRECO = `<p class="preco-linha">R$397 ou 12x de R$41,06 · garantia de 7 dias</p>`;
   /* ordem [Jade, 12/10]: título → vídeo 3 (oferta) → as 6 ações → oferta de novo no fim */
   app.innerHTML=`<section class="fecho fecho-topo"><div class="fecho-in">
@@ -695,7 +696,7 @@ function salva(tela){ guarda("raiox-estado", JSON.stringify({tela, passo, R, nom
 (function inicia(){
   let e=null; try{ e=JSON.parse(le("raiox-estado")||"null"); }catch(x){}
   if(!e || !e.tela){ abertura(); return; }
-  R=e.R||{}; passo=e.passo; if(e.nome) defineNome(e.nome);
+  R=e.R||{}; passo=e.passo; if(e.nome) defineNome(bonito(e.nome));
   if(e.tela==="plano") plano();
   else if(e.tela==="raiox") diagnostico();
   else if(e.tela==="pronto") pronto();
