@@ -78,10 +78,27 @@ h2{font-size:clamp(28px,7.5vw,36px)}
 .lead{color:var(--muted);margin:18px 0 0;max-width:60ch}
 
 .opcoes{display:grid;gap:10px;margin-top:28px}
-.opc{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);padding:16px 18px;cursor:pointer;transition:border-color .15s,background .15s;font-size:17px}
+/* [Jade, 13/10] respostas em alto relevo: luz em cima, sombra embaixo; ao tocar, afundam */
+.opc{position:relative;display:block;width:100%;text-align:left;border:1px solid #3a2e31;border-radius:14px;padding:16px 18px;cursor:pointer;font-size:17px;-webkit-tap-highlight-color:transparent;
+  background:linear-gradient(180deg,#1f171a 0%,#140e10 100%);box-shadow:inset 0 1px 0 rgba(242,234,223,.07),0 4px 0 #050304,0 8px 18px -8px rgba(0,0,0,.8);
+  transition:border-color .2s,background .2s,box-shadow .2s,transform .12s}
+.opc:active{transform:translateY(3px);box-shadow:inset 0 1px 0 rgba(242,234,223,.07),0 1px 0 #050304}
 .opc small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
-.opc:hover{border-color:var(--suave)}
-.opc.sel{border-color:var(--ouro);background:color-mix(in srgb,var(--ouro) 10%,var(--noite-2))}
+/* só em computador: no celular o "hover" ficava preso e parecia uma resposta marcada */
+@media (hover:hover){ .opc:hover{border-color:rgba(201,162,74,.55)} }
+/* marcada: dourada, com ✓ */
+.opc.sel{border-color:var(--ouro);background:linear-gradient(180deg,rgba(201,162,74,.24),rgba(201,162,74,.10));box-shadow:0 0 0 1px var(--ouro),0 0 22px -4px rgba(201,162,74,.6);transform:translateY(3px)}
+.opc .ok{position:absolute;right:12px;top:50%;width:26px;height:26px;margin-top:-13px;border-radius:50%;background:var(--ouro);color:#1C1416;font-weight:800;font-size:15px;display:grid;place-items:center;opacity:0;scale:.5;transition:opacity .2s,scale .25s cubic-bezier(.3,1.6,.5,1)}
+.opc.sel .ok{opacity:1;scale:1}
+.opc .opc-txt{display:block;padding-right:28px}
+/* entrada 1, 2, 3: cada resposta acende uma vez em dourado e para */
+.opcoes.acende .opc{animation:acende 1s ease both}
+.opcoes.acende .opc:nth-child(1){animation-delay:.35s}
+.opcoes.acende .opc:nth-child(2){animation-delay:.75s}
+.opcoes.acende .opc:nth-child(3){animation-delay:1.15s}
+.opcoes.acende .opc:nth-child(4){animation-delay:1.55s}
+@keyframes acende{0%,100%{}45%{border-color:var(--ouro);box-shadow:0 0 0 1px var(--ouro),0 0 24px -4px rgba(201,162,74,.65)}}
+@media (prefers-reduced-motion:reduce){ .opcoes.acende .opc{animation:none} }
 
 textarea{width:100%;margin-top:24px;min-height:130px;background:var(--card);border:1px solid var(--line);color:var(--fg);font-family:var(--f-voz);font-size:22px;line-height:1.3;padding:16px;resize:vertical}
 textarea::placeholder{color:#6d625d;font-style:italic}
@@ -265,9 +282,12 @@ textarea:focus{outline:none;border-color:var(--ouro)}
 @keyframes brilho2{from{background-position:100% 0}to{background-position:-200% 0}}
 
 /* TESTE: respostas com ilustração (traço dourado) */
-.opc.com-img{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;padding:12px 16px}
-.opc-img svg{width:64px;height:48px;fill:none;stroke:var(--ouro);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block}
-.opc.sel .opc-img svg{stroke:#F3DC9A}
+/* [Jade, 13/10] desenho menor dentro de um círculo dourado */
+.opc.com-img{display:grid;grid-template-columns:50px 1fr;gap:14px;align-items:center;padding:10px 16px;min-height:72px}
+.opc-img{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;border:1.5px solid rgba(201,162,74,.6);background:radial-gradient(circle at 50% 35%,rgba(201,162,74,.14),transparent 70%);transition:background .2s}
+.opc-img svg{width:34px;height:26px;fill:none;stroke:var(--ouro);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block}
+.opc.sel .opc-img{background:var(--ouro);border-color:var(--ouro)}
+.opc.sel .opc-img svg{stroke:#1C1416}
 .opc-txt{min-width:0}
 .teste-img{margin-top:14px;text-align:left}
 
@@ -368,7 +388,7 @@ function pergunta(){
       <button class="link" id="pular">Não sei dizer agora</button>`;
   } else {
     const temImg = IMAGENS && q.o.some(o=>o.img);
-    corpo=`<div class="opcoes">${q.o.map((o,i)=>`<button class="opc${R[q.id]===i?" sel":""}${temImg?" com-img":""}" data-i="${i}">${temImg?`<span class="opc-img">${o.img}</span>`:""}<span class="opc-txt">${esc(o.t)}${o.d?`<small>${esc(o.d)}</small>`:""}</span></button>`).join("")}</div>`;
+    corpo=`<div class="opcoes acende">${q.o.map((o,i)=>`<button class="opc${R[q.id]===i?" sel":""}${temImg?" com-img":""}" data-i="${i}">${temImg?`<span class="opc-img">${o.img}</span>`:""}<span class="opc-txt">${esc(o.t)}${o.d?`<small>${esc(o.d)}</small>`:""}</span><span class="ok" aria-hidden="true">✓</span></button>`).join("")}</div>`;
   }
   app.innerHTML=`<div class="wrap">
     <div class="topo"><button class="voltar" id="voltar">← Voltar</button><span class="contador">${passo+1} / ${total}</span></div>
@@ -382,8 +402,8 @@ function pergunta(){
     document.getElementById("pular").onclick=()=>{R[q.id]="";avanca();};
   } else {
     app.querySelectorAll(".opc").forEach(b=>b.onclick=()=>{
-      app.querySelectorAll(".opc").forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
-      R[q.id]=+b.dataset.i; setTimeout(avanca,260);
+      app.querySelectorAll(".opc").forEach(x=>{x.classList.remove("sel"); x.onclick=null;}); b.classList.add("sel"); /* um toque só: evita pular uma pergunta com toque duplo */
+      R[q.id]=+b.dataset.i; setTimeout(avanca,500); /* meio segundo para ela ver a marcação */
     });
   }
   window.scrollTo(0,0);
