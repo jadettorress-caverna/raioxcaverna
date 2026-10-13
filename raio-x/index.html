@@ -451,6 +451,20 @@ function escanear(){
 }
 
 /* ---------- regras do diagnóstico ---------- */
+/* [Jade, 13/10] vídeos em estilo VSL: sem barra nem tempo, não avança nem volta; um toque pausa e continua; ao voltar ao link, continua de onde parou */
+function vsl(v, mostraPlay, chave){
+  let max=0, salvo=0, som=false;
+  try{ salvo=+localStorage.getItem(chave)||0; }catch(e){}
+  v.controls=false;
+  const comeca=()=>{ som=true; v.loop=false; v.muted=false; max=salvo; v.currentTime=salvo; mostraPlay(false); v.play().catch(()=>{}); };
+  v.addEventListener("timeupdate",()=>{ if(!som) return; if(!v.seeking && v.currentTime>max) max=v.currentTime; try{ localStorage.setItem(chave,String(Math.floor(v.currentTime))); }catch(e){} });
+  v.addEventListener("seeking",()=>{ if(som && Math.abs(v.currentTime-max)>1.5) v.currentTime=max; });
+  v.addEventListener("click",()=>{ if(!som) return comeca(); v.paused ? v.play().catch(()=>{}) : v.pause(); });
+  v.addEventListener("pause",()=>{ if(som && !v.ended) mostraPlay(true); });
+  v.addEventListener("play",()=>{ if(som) mostraPlay(false); });
+  v.addEventListener("ended",()=>{ try{ localStorage.removeItem(chave); }catch(e){} });
+  return ()=>{ if(!som) comeca(); else v.play().catch(()=>{}); };
+}
 function v3(id){ return VAL3[R[id]] ?? 0; }
 function palavras(){ return (R.q10||"").replace(/[.!\s]+$/,"").slice(0,140); }
 const EXP = ["pouco tempo","3 a 10 anos","mais de 10 anos"];
@@ -648,8 +662,10 @@ function diagnostico(){
   /* vídeo 2: começa mudo (com as legendas); o play dourado volta ao início com som; no fim entra a capa que leva à leitura */
   const v2=document.getElementById("v2v");
   v2.muted=true; v2.play().catch(()=>{});
-  document.getElementById("som").onclick=()=>{ document.getElementById("v2-sobre").hidden=true; v2.muted=false; v2.currentTime=0; v2.controls=true; v2.play().catch(()=>{}); };
-  v2.addEventListener("ended",()=>{ v2.controls=false; document.getElementById("v2-sobre").hidden=true; document.getElementById("v2-fim").hidden=false; });
+  const sobre2=document.getElementById("v2-sobre");
+  const toca2=vsl(v2, mostra=>{ sobre2.hidden=!mostra; sobre2.querySelector(".scan2").hidden=true; }, "raiox-v2");
+  document.getElementById("som").onclick=toca2;
+  v2.addEventListener("ended",()=>{ sobre2.hidden=true; document.getElementById("v2-fim").hidden=false; });
   document.getElementById("v2-fim").onclick=()=>desceDevagar(document.getElementById("ver-plano"));
   document.getElementById("analisar").onclick=plano; /* o mesmo botão em cima e embaixo: vai direto ao plano */
   window.scrollTo(0,0);
@@ -701,7 +717,8 @@ function plano(){
   </div>`;
   document.getElementById("ver-raiox").onclick=diagnostico;
   const v3=document.getElementById("v3v");
-  document.getElementById("som3").onclick=()=>{ document.getElementById("som3").hidden=true; v3.controls=true; v3.play().catch(()=>{}); };
+  const som3=document.getElementById("som3");
+  som3.onclick=vsl(v3, mostra=>{ som3.hidden=!mostra; }, "raiox-v3");
   const compra=()=>{ px("InitiateCheckout"); setTimeout(()=>{ window.location.href = KIWIFY; }, 350); /* dá tempo do Pixel registrar */ };
   document.getElementById("comprar").onclick=compra;
   document.getElementById("comprar2").onclick=compra;

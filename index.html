@@ -188,26 +188,30 @@ const WHATSAPP = "559885196559"; /* WhatsApp Business do funil: +55 98 8519-6559
 const REVELA_EM = 60;
 const v = document.getElementById("v"), playbtn = document.getElementById("playbtn");
 const barra = document.getElementById("barra"), conta = document.getElementById("conta"), trancado = document.getElementById("trancado");
-let liberado = false, comSom = false;
+let liberado = false, comSom = false, maxV = 0, salvoV = 0;
+try{ salvoV = +localStorage.getItem("raiox-v1") || 0; }catch(e){} /* [Jade, 13/10] estilo VSL: volta de onde parou, sem barra, sem avançar */
 function revela(){ if(liberado) return; liberado = true; trancado.hidden = true; document.getElementById("abre").hidden = false; }
 const mmss = n => "0:" + String(Math.max(0, Math.ceil(n))).padStart(2,"0");
 playbtn.onclick = () => {
-  if(!comSom){ comSom = true; v.loop = false; v.muted = false; v.currentTime = 0; document.getElementById("sobre1").hidden = true; }
+  if(!comSom){ comSom = true; v.loop = false; v.muted = false; maxV = salvoV; v.currentTime = salvoV; document.getElementById("sobre1").hidden = true; }
   /* o vídeo já estava rodando mudo, então o evento "play" não acontece de novo: some com o play aqui mesmo */
-  playbtn.hidden = true; v.controls = true; if(!liberado) trancado.firstChild.textContent = "Seu Raio-X libera em ";
+  playbtn.hidden = true; if(!liberado) trancado.firstChild.textContent = "Seu Raio-X libera em ";
   v.play().catch(()=>{});
 };
-v.addEventListener("click", () => { if(!comSom) playbtn.click(); }); /* tocar em qualquer parte do vídeo também liga o som */
+v.addEventListener("click", () => { if(!comSom) return playbtn.click(); v.paused ? v.play().catch(()=>{}) : v.pause(); }); /* primeiro toque liga o som; depois, um toque pausa e continua */
+v.addEventListener("seeking", () => { if(comSom && Math.abs(v.currentTime - maxV) > 1.5) v.currentTime = maxV; }); /* não deixa avançar nem voltar */
 v.muted = true; v.play().catch(()=>{}); /* começa mudo, mostrando a Jade */
-v.addEventListener("play", () => { if(!comSom) return; playbtn.hidden = true; v.controls = true; if(!liberado) trancado.firstChild.textContent = "Seu Raio-X libera em "; });
+v.addEventListener("play", () => { if(!comSom) return; playbtn.hidden = true; if(!liberado) trancado.firstChild.textContent = "Seu Raio-X libera em "; });
 v.addEventListener("pause", () => { if(comSom && !v.ended) playbtn.hidden = false; });
 v.addEventListener("timeupdate", () => {
   if(!comSom) return;
+  if(!v.seeking && v.currentTime > maxV) maxV = v.currentTime;
+  try{ localStorage.setItem("raiox-v1", String(Math.floor(v.currentTime))); }catch(e){}
   if(v.duration) barra.style.width = Math.min(100, v.currentTime / v.duration * 100) + "%";
   if(!liberado) conta.textContent = mmss(REVELA_EM - v.currentTime);
   if(v.currentTime >= REVELA_EM) revela();
 });
-v.addEventListener("ended", () => { if(!comSom) return; revela(); playbtn.hidden = true; v.controls = false; document.getElementById("fim").hidden = false; });
+v.addEventListener("ended", () => { if(!comSom) return; revela(); playbtn.hidden = true; try{ localStorage.removeItem("raiox-v1"); }catch(e){} document.getElementById("fim").hidden = false; });
 document.getElementById("fim").onclick = () => { campo.scrollIntoView({behavior:"smooth", block:"center"}); setTimeout(() => campo.focus(), 400); };
 v.addEventListener("error", revela); /* se o vídeo falhar, ninguém fica presa */
 
