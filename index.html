@@ -100,10 +100,13 @@ h1 .ln{display:block;white-space:nowrap}
 .video{padding:0;overflow:hidden;position:relative}
 .video video{width:100%;height:100%;display:block;object-fit:cover;background:#000}
 /* play próprio, no azul dos botões, sobre a capa */
-.playbtn{position:absolute;inset:0;margin:auto;width:78px;height:78px;border-radius:50%;border:0;cursor:pointer;
-  background:linear-gradient(135deg,#4A70DD 0%,var(--destaque) 48%,#132E86 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 10px 30px rgba(0,0,0,.5),0 0 0 8px rgba(74,112,221,.25)}
-.playbtn::after{content:"";position:absolute;left:31px;top:24px;border-left:24px solid #FBF4EC;border-top:15px solid transparent;border-bottom:15px solid transparent}
+/* play dourado: círculo escuro translúcido, borda e triângulo dourados, pulsando (igual ao vídeo 2) */
+.playbtn{position:absolute;inset:0;margin:auto;width:78px;height:78px;border-radius:50%;border:2px solid var(--ouro);cursor:pointer;padding:0;
+  background:rgba(11,8,9,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:pulsa1 1.8s ease-in-out infinite}
+@keyframes pulsa1{0%,100%{box-shadow:0 0 0 0 rgba(201,162,74,.45)}50%{box-shadow:0 0 0 12px rgba(201,162,74,0)}}
+.playbtn::after{content:"";position:absolute;left:29px;top:22px;border-left:25px solid var(--ouro);border-top:15px solid transparent;border-bottom:15px solid transparent}
+.sobre1{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.sobre1[hidden]{display:none}
 .playbtn[hidden]{display:none}
 /* capa desenhada */
 .capa{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 40%,#1a1316 0%,var(--noite) 70%);overflow:hidden;
@@ -144,18 +147,9 @@ h1 .ln{display:block;white-space:nowrap}
   <p class="assista">Assista ao vídeo: eu te explico como funciona.</p>
 
   <div class="video" style="margin-top:12px">
-    <video id="v" src="video/raio-x-video-1.mp4" playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture></video>
-    <!-- capa desenhada (sem foto): os post-its do Raio-X e a linha do scanner; some no play -->
-    <div class="capa" id="capa" aria-hidden="true">
-      <span class="capa-kicker">Raio-X da Metodologia</span>
-      <span class="pi verde" style="left:7%;top:30%;--r:-6deg">Porquê</span>
-      <span class="pi amarelo" style="left:26%;top:64%;--r:4deg">Método</span>
-      <span class="pi rosa" style="right:24%;top:24%;--r:5deg">Oferta</span>
-      <span class="pi amarelo" style="right:6%;top:58%;--r:-4deg">Assunto</span>
-      <span class="pi rosa" style="left:8%;top:70%;--r:-3deg">Perfil</span>
-      <i class="scan-linha"></i>
-      <span class="capa-pe">Aperte o play · 1 minuto</span>
-    </div>
+    <video id="v" src="video/raio-x-video-1.mp4" poster="video/raio-x-video-1-capa.jpg" muted autoplay loop playsinline preload="auto" controlslist="nodownload noplaybackrate" disablepictureinpicture></video>
+    <!-- [Jade, 12/10] sem capa: o vídeo começa mudo mostrando a Jade, com a linha do raio-x passando e o play dourado; o play volta ao início com som -->
+    <div class="sobre1" id="sobre1" aria-hidden="true"><i class="scan-linha"></i></div>
     <button class="playbtn" id="playbtn" type="button" aria-label="Dar play no vídeo"></button>
     <!-- capa de encerramento: aparece quando o vídeo termina e leva ao campo do nome -->
     <button class="capa fim" id="fim" type="button" hidden>
@@ -194,18 +188,23 @@ const WHATSAPP = "559885196559"; /* WhatsApp Business do funil: +55 98 8519-6559
 const REVELA_EM = 60;
 const v = document.getElementById("v"), playbtn = document.getElementById("playbtn");
 const barra = document.getElementById("barra"), conta = document.getElementById("conta"), trancado = document.getElementById("trancado");
-let liberado = false;
+let liberado = false, comSom = false;
 function revela(){ if(liberado) return; liberado = true; trancado.hidden = true; document.getElementById("abre").hidden = false; }
 const mmss = n => "0:" + String(Math.max(0, Math.ceil(n))).padStart(2,"0");
-playbtn.onclick = () => { v.play(); };
-v.addEventListener("play", () => { playbtn.hidden = true; document.getElementById("capa").hidden = true; v.controls = true; if(!liberado) trancado.firstChild.textContent = "Seu Raio-X libera em "; });
-v.addEventListener("pause", () => { if(!v.ended) playbtn.hidden = false; });
+playbtn.onclick = () => {
+  if(!comSom){ comSom = true; v.loop = false; v.muted = false; v.currentTime = 0; document.getElementById("sobre1").hidden = true; }
+  v.play().catch(()=>{});
+};
+v.muted = true; v.play().catch(()=>{}); /* começa mudo, mostrando a Jade */
+v.addEventListener("play", () => { if(!comSom) return; playbtn.hidden = true; v.controls = true; if(!liberado) trancado.firstChild.textContent = "Seu Raio-X libera em "; });
+v.addEventListener("pause", () => { if(comSom && !v.ended) playbtn.hidden = false; });
 v.addEventListener("timeupdate", () => {
+  if(!comSom) return;
   if(v.duration) barra.style.width = Math.min(100, v.currentTime / v.duration * 100) + "%";
   if(!liberado) conta.textContent = mmss(REVELA_EM - v.currentTime);
   if(v.currentTime >= REVELA_EM) revela();
 });
-v.addEventListener("ended", () => { revela(); playbtn.hidden = true; v.controls = false; document.getElementById("fim").hidden = false; });
+v.addEventListener("ended", () => { if(!comSom) return; revela(); playbtn.hidden = true; v.controls = false; document.getElementById("fim").hidden = false; });
 document.getElementById("fim").onclick = () => { campo.scrollIntoView({behavior:"smooth", block:"center"}); setTimeout(() => campo.focus(), 400); };
 v.addEventListener("error", revela); /* se o vídeo falhar, ninguém fica presa */
 
