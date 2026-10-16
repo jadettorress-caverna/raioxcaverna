@@ -299,7 +299,12 @@ textarea:focus{outline:none;border-color:var(--ouro)}
 /* a página do plano abre no escuro: um título só, o do caminho; o plano vem depois, no claro */
 .topo-escuro{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 14px;font-size:13px;color:var(--suave);border-bottom:1px solid var(--linha-esc);padding-bottom:12px;margin-bottom:26px}
 .topo-escuro .link{color:var(--suave);margin:0;padding:0;font-size:13px}
-/* [Jade, 16/10] janela que sobe de baixo para escolher a etapa */
+/* [Jade, 16/10] presente: campo para digitar a etapa */
+.bonus-txt{font-size:18px;line-height:1.45;color:var(--creme);margin:18px 0 0;border-left:2px solid var(--ouro);padding-left:14px}
+.bonus-txt b{color:var(--ouro)}
+.bonus-campo{display:grid;gap:8px;justify-items:center;margin-top:22px;--line:var(--linha-esc);--card:var(--noite-2);--fg:var(--creme)}
+.bonus-campo label{font-family:var(--f-voz);font-style:italic;font-size:22px;color:var(--ouro)}
+/* (sem uso) janela antiga */
 .folha-fundo{position:fixed;inset:0;background:rgba(5,3,4,.7);z-index:50;animation:aparece .2s ease}
 .folha{position:fixed;left:0;right:0;bottom:0;z-index:51;max-height:88vh;overflow:auto;background:var(--noite);color:var(--creme);border-top:1px solid var(--ouro);border-radius:20px 20px 0 0;padding:26px 16px 28px;max-width:560px;margin:0 auto;animation:sobe .28s cubic-bezier(.2,.8,.3,1);color-scheme:dark;--card:var(--noite-2);--line:var(--linha-esc);--fg:var(--creme);--muted:var(--suave)}
 .folha[hidden],.folha-fundo[hidden]{display:none}
@@ -705,8 +710,14 @@ function plano(){
     <div class="topo-escuro"><span>Seu plano fica salvo neste link. Volte quando quiser.</span><button class="link" id="ver-raiox">Ver o meu Raio-X</button></div>
     <span class="kicker">Raio-X da Metodologia · o caminho</span>
     <h1 class="liberado">${NOME ? esc(NOME) + "," : ""} <em>${NOME ? "seu" : "Seu"} plano de ação está liberado.</em></h1>
-    <p class="opcoes-txt">E para você que chegou até aqui: escolha a etapa em que você mais precisa de orientação, envie e receba <b>um áudio direto da Jade</b> no seu WhatsApp.</p>
-    <button class="btn" type="button" id="abrir-temas">${ICONE_WPP}Escolher a minha etapa</button>
+    <p class="opcoes-txt">Agora você sabe quais são as pontas soltas da sua metodologia.</p>
+    <p class="bonus-txt">Libere mais um presente: receba da Jade <b>um áudio de feedback</b> sobre a etapa em que você sente mais dificuldade.</p>
+    <div class="bonus-campo">
+      <label for="etapa">Digite o nome da etapa</label>
+      <div class="anel" id="anel-etapa"><input id="etapa" type="text" placeholder="Ex.: posicionamento" maxlength="120" autocomplete="off"></div>
+      <p class="falta-tema" id="falta-tema" hidden>Digite a etapa para a Jade.</p>
+    </div>
+    <button class="btn" type="button" id="enviar">${ICONE_WPP}Receber meu áudio bônus de orientação</button>
     <p class="preco-linha">A mensagem já vai pronta. É só tocar em enviar.</p>
     <p class="role">Role para ver o seu plano ↓</p>
   </div></section>
@@ -731,44 +742,25 @@ function plano(){
     </section>
     <section class="fim-plano">
       <p class="fim-plano-txt">${comNome("este é o seu caminho.")} <em>Você não precisa percorrer sozinha.</em></p>
-      <button class="btn" type="button" id="abrir-temas2">${ICONE_WPP}Escolher a minha etapa</button>
-      <p class="preco-linha">Receba um áudio de orientação no seu WhatsApp.</p>
+      <button class="btn" type="button" id="enviar2">${ICONE_WPP}Receber meu áudio bônus de orientação</button>
+      <p class="preco-linha">Um áudio de feedback da Jade, no seu WhatsApp.</p>
     </section>
     ${RODAPE(false)}
   </div>
-  <div class="folha-fundo" id="folha-fundo" hidden></div>
-  <div class="folha" id="folha" role="dialog" aria-modal="true" aria-labelledby="folha-tit" hidden>
-    <button class="folha-x" id="folha-x" type="button" aria-label="Fechar">×</button>
-    <p class="folha-tit" id="folha-tit">Em qual etapa você mais precisa de orientação?</p>
-    <div class="opcoes temas" id="temas">${etapas().map(e=>`<button class="opc" type="button" data-t="${esc(e.n)}"><span class="opc-txt">${esc(e.n)}</span><span class="ok" aria-hidden="true">✓</span></button>`).join("")}
-      <button class="opc" type="button" data-t="outro"><span class="opc-txt">Outro tema</span><span class="ok" aria-hidden="true">✓</span></button></div>
-    <textarea id="outro" class="tema-outro" placeholder="Escreva o tema aqui" maxlength="160" hidden></textarea>
-    <p class="falta-tema" id="falta-tema" hidden>Escolha uma etapa.</p>
-    <button class="btn" type="button" id="enviar">${ICONE_WPP}Enviar para a Jade</button>
-    <p class="preco-linha">A mensagem já vai pronta. É só tocar em enviar.</p>
-  </div>`;
+`;
   document.getElementById("ver-raiox").onclick=diagnostico;
-  /* [Jade, 16/10] ela escolhe (ou escreve) o tema da orientação; a mensagem chega pronta no WhatsApp da Jade */
-  let tema="";
-  const temas=document.getElementById("temas"), outro=document.getElementById("outro"), faltaT=document.getElementById("falta-tema");
-  temas.querySelectorAll(".opc").forEach(b=>b.onclick=()=>{
-    temas.querySelectorAll(".opc").forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
-    tema=b.dataset.t; outro.hidden = tema!=="outro"; if(tema==="outro") outro.focus(); faltaT.hidden=true;
-  });
+  /* [Jade, 16/10] presente: ela digita a etapa em que sente mais dificuldade e recebe um áudio de feedback da Jade no WhatsApp */
+  const etapa=document.getElementById("etapa"), faltaT=document.getElementById("falta-tema"), anelE=document.getElementById("anel-etapa");
+  etapa.addEventListener("input",()=>{ const tem=!!etapa.value.trim(); anelE.classList.toggle("parado",tem); if(tem) faltaT.hidden=true; });
   const envia=()=>{
-    const t = tema==="outro" ? outro.value.trim() : tema;
-    if(!t){ faltaT.hidden=false; return; }
-    const msg = "Oi, Jade! Sou a " + (NOME || "") + " e fiz o Raio-X da Metodologia. Gostaria de receber uma orientação em áudio sobre: " + t + ".\n\nO meu plano de ação:\n" +
+    const t=etapa.value.trim();
+    if(!t){ faltaT.hidden=false; anelE.classList.remove("erro"); void anelE.offsetWidth; anelE.classList.add("erro"); etapa.scrollIntoView({behavior:"smooth",block:"center"}); setTimeout(()=>etapa.focus(),400); setTimeout(()=>anelE.classList.remove("erro"),900); return; }
+    const msg = "Olá, Jade! Sou a " + (NOME || "") + ". Gostaria de receber uma orientação relacionada à etapa: " + t + ".\n\nSegue também o resultado do meu Raio-X:\n" +
       etapas().map((e,i)=>(i+1) + ". " + e.n + ": " + STATUS[e.s]).join("\n");
     px("Lead"); setTimeout(()=>{ window.location.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); }, 350); /* dá tempo do Pixel registrar */
   };
   document.getElementById("enviar").onclick=envia;
-  const folha=document.getElementById("folha"), fundo=document.getElementById("folha-fundo");
-  const abre=()=>{ folha.hidden=false; fundo.hidden=false; document.body.style.overflow="hidden"; };
-  const fecha=()=>{ folha.hidden=true; fundo.hidden=true; document.body.style.overflow=""; };
-  document.getElementById("abrir-temas").onclick=abre;
-  document.getElementById("abrir-temas2").onclick=abre;
-  document.getElementById("folha-x").onclick=fecha; fundo.onclick=fecha;
+  document.getElementById("enviar2").onclick=()=>{ if(etapa.value.trim()) envia(); else { etapa.scrollIntoView({behavior:"smooth",block:"center"}); setTimeout(()=>etapa.focus(),400); } };
   window.scrollTo(0,0);
 }
 
