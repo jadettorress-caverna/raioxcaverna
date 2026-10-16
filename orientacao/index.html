@@ -711,13 +711,13 @@ function plano(){
     <span class="kicker">Raio-X da Metodologia · o caminho</span>
     <h1 class="liberado">${NOME ? esc(NOME) + "," : ""} <em>${NOME ? "seu" : "Seu"} plano de ação está liberado.</em></h1>
     <p class="opcoes-txt">Agora você sabe quais são as pontas soltas da sua metodologia.</p>
-    <p class="bonus-txt">Libere mais um presente: receba da Jade <b>um áudio de feedback</b> sobre a etapa em que você sente mais dificuldade.</p>
+    <p class="bonus-txt">Libere mais um presente: digite a sua <b>ponta mais solta</b> e receba da Jade <b>uma direção em áudio</b>.</p>
     <div class="bonus-campo">
-      <label for="etapa">Digite o nome da etapa</label>
+      <label for="etapa">Digite a sua ponta mais solta</label>
       <div class="anel" id="anel-etapa"><input id="etapa" type="text" placeholder="Ex.: posicionamento" maxlength="120" autocomplete="off"></div>
-      <p class="falta-tema" id="falta-tema" hidden>Digite a etapa para a Jade.</p>
+      <p class="falta-tema" id="falta-tema" hidden>Digite a sua ponta mais solta.</p>
     </div>
-    <button class="btn" type="button" id="enviar">${ICONE_WPP}Receber meu áudio bônus de orientação</button>
+    <button class="btn" type="button" id="enviar">${ICONE_WPP}Receber minha direção em áudio</button>
     <p class="preco-linha">A mensagem já vai pronta. É só tocar em enviar.</p>
     <p class="role">Role para ver o seu plano ↓</p>
   </div></section>
@@ -742,8 +742,8 @@ function plano(){
     </section>
     <section class="fim-plano">
       <p class="fim-plano-txt">${comNome("este é o seu caminho.")} <em>Você não precisa percorrer sozinha.</em></p>
-      <button class="btn" type="button" id="enviar2">${ICONE_WPP}Receber meu áudio bônus de orientação</button>
-      <p class="preco-linha">Um áudio de feedback da Jade, no seu WhatsApp.</p>
+      <button class="btn" type="button" id="enviar2">${ICONE_WPP}Receber minha direção em áudio</button>
+      <p class="preco-linha">Uma direção da Jade, em áudio, no seu WhatsApp.</p>
     </section>
     ${RODAPE(false)}
   </div>
@@ -755,7 +755,7 @@ function plano(){
   const envia=()=>{
     const t=etapa.value.trim();
     if(!t){ faltaT.hidden=false; anelE.classList.remove("erro"); void anelE.offsetWidth; anelE.classList.add("erro"); etapa.scrollIntoView({behavior:"smooth",block:"center"}); setTimeout(()=>etapa.focus(),400); setTimeout(()=>anelE.classList.remove("erro"),900); return; }
-    const msg = "Olá, Jade! Sou a " + (NOME || "") + ". Gostaria de receber uma orientação relacionada à etapa: " + t + ".\n\nSegue também o resultado do meu Raio-X:\n" +
+    const msg = "Olá, Jade! Sou a " + (NOME || "") + ". Gostaria de receber uma direção sobre a minha ponta mais solta: " + t + ".\n\nSegue também o resultado do meu Raio-X:\n" +
       etapas().map((e,i)=>(i+1) + ". " + e.n + ": " + STATUS[e.s]).join("\n");
     px("Lead"); setTimeout(()=>{ window.location.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); }, 350); /* dá tempo do Pixel registrar */
   };
