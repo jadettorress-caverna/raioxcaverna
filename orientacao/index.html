@@ -299,6 +299,13 @@ textarea:focus{outline:none;border-color:var(--ouro)}
 /* a página do plano abre no escuro: um título só, o do caminho; o plano vem depois, no claro */
 .topo-escuro{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 14px;font-size:13px;color:var(--suave);border-bottom:1px solid var(--linha-esc);padding-bottom:12px;margin-bottom:26px}
 .topo-escuro .link{color:var(--suave);margin:0;padding:0;font-size:13px}
+.tema-perg{font-family:var(--f-voz);font-style:italic;font-size:24px;line-height:1.2;color:var(--ouro);margin:26px 0 0}
+.temas{margin-top:16px}
+.temas .opc{font-size:16px;padding:14px 16px}
+.tema-outro{min-height:90px;font-size:19px;margin-top:10px}
+.tema-outro[hidden]{display:none}
+.falta-tema{color:#E0675A;font-weight:600;margin:10px 0 0}
+.falta-tema[hidden]{display:none}
 .preco-linha{margin:10px 0 0;text-align:center;font-size:14px;color:var(--suave)}
 .role{margin:22px 0 0;text-align:center;font-family:var(--f-voz);font-style:italic;font-size:18px;color:var(--ouro)}
 .fim-plano{margin-top:48px;padding-top:28px;border-top:1px solid var(--line);text-align:center}
@@ -689,8 +696,13 @@ function plano(){
     <div class="topo-escuro"><span>Seu plano fica salvo neste link. Volte quando quiser.</span><button class="link" id="ver-raiox">Ver o meu Raio-X</button></div>
     <span class="kicker">Raio-X da Metodologia · o caminho</span>
     <h1 class="liberado">${NOME ? esc(NOME) + "," : ""} <em>${NOME ? "seu" : "Seu"} plano de ação está liberado.</em></h1>
-    <p class="opcoes-txt">Envie o resultado do seu Raio-X para a Jade e receba <b>um áudio de orientação</b> no seu WhatsApp.</p>
-    <button class="btn" type="button" id="enviar">${ICONE_WPP}Enviar meu Raio-X para a Jade</button>
+    <p class="opcoes-txt">Agora envie o seu plano e receba <b>uma orientação da Jade, em áudio,</b> no seu WhatsApp.</p>
+    <p class="tema-perg">Se você pudesse receber agora uma orientação da Jade, qual tema você escolheria?</p>
+    <div class="opcoes temas" id="temas">${etapas().map(e=>`<button class="opc" type="button" data-t="${esc(e.n)}"><span class="opc-txt">${esc(e.n)}</span><span class="ok" aria-hidden="true">✓</span></button>`).join("")}
+      <button class="opc" type="button" data-t="outro"><span class="opc-txt">Outro tema</span><span class="ok" aria-hidden="true">✓</span></button></div>
+    <textarea id="outro" class="tema-outro" placeholder="Escreva o tema aqui" maxlength="160" hidden></textarea>
+    <p class="falta-tema" id="falta-tema" hidden>Escolha um tema para a Jade.</p>
+    <button class="btn" type="button" id="enviar">${ICONE_WPP}Enviar meu plano para a Jade</button>
     <p class="preco-linha">A mensagem já vai pronta. É só tocar em enviar.</p>
     <p class="role">Role para ver o seu plano ↓</p>
   </div></section>
@@ -715,18 +727,28 @@ function plano(){
     </section>
     <section class="fim-plano">
       <p class="fim-plano-txt">${comNome("este é o seu caminho.")} <em>Você não precisa percorrer sozinha.</em></p>
-      <button class="btn" type="button" id="enviar2">${ICONE_WPP}Enviar meu Raio-X para a Jade</button>
+      <button class="btn" type="button" id="enviar2">${ICONE_WPP}Escolher o tema da minha orientação</button>
       <p class="preco-linha">Receba um áudio de orientação no seu WhatsApp.</p>
     </section>
     ${RODAPE(false)}
   </div>`;
   document.getElementById("ver-raiox").onclick=diagnostico;
-  /* mensagem pronta com o nome e o plano dela (sem o n8n, é ela quem envia) */
-  const msg = "Olá, Jade! Sou a " + (NOME || "") + " e acabei de fazer o Raio-X da Metodologia. Quero receber o áudio de orientação.\n\nO meu plano de ação:\n" +
-    etapas().map((e,i)=>(i+1) + ". " + e.n + ": " + STATUS[e.s]).join("\n");
-  const envia=()=>{ px("Lead"); setTimeout(()=>{ window.location.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); }, 350); /* dá tempo do Pixel registrar */ };
+  /* [Jade, 16/10] ela escolhe (ou escreve) o tema da orientação; a mensagem chega pronta no WhatsApp da Jade */
+  let tema="";
+  const temas=document.getElementById("temas"), outro=document.getElementById("outro"), faltaT=document.getElementById("falta-tema");
+  temas.querySelectorAll(".opc").forEach(b=>b.onclick=()=>{
+    temas.querySelectorAll(".opc").forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
+    tema=b.dataset.t; outro.hidden = tema!=="outro"; if(tema==="outro") outro.focus(); faltaT.hidden=true;
+  });
+  const envia=()=>{
+    const t = tema==="outro" ? outro.value.trim() : tema;
+    if(!t){ faltaT.hidden=false; temas.scrollIntoView({behavior:"smooth",block:"center"}); return; }
+    const msg = "Oi, Jade! Sou a " + (NOME || "") + " e fiz o Raio-X da Metodologia. Gostaria de receber uma orientação em áudio sobre: " + t + ".\n\nO meu plano de ação:\n" +
+      etapas().map((e,i)=>(i+1) + ". " + e.n + ": " + STATUS[e.s]).join("\n");
+    px("Lead"); setTimeout(()=>{ window.location.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); }, 350); /* dá tempo do Pixel registrar */
+  };
   document.getElementById("enviar").onclick=envia;
-  document.getElementById("enviar2").onclick=envia;
+  document.getElementById("enviar2").onclick=()=>{ if(tema) envia(); else temas.scrollIntoView({behavior:"smooth",block:"center"}); };
   window.scrollTo(0,0);
 }
 
