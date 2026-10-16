@@ -697,7 +697,7 @@ function plano(){
     <span class="kicker">Raio-X da Metodologia · o caminho</span>
     <h1 class="liberado">${NOME ? esc(NOME) + "," : ""} <em>${NOME ? "seu" : "Seu"} plano de ação está liberado.</em></h1>
     <p class="opcoes-txt">Agora envie o seu plano e receba <b>uma orientação da Jade, em áudio,</b> no seu WhatsApp.</p>
-    <p class="tema-perg">Se você pudesse receber agora uma orientação da Jade, qual tema você escolheria?</p>
+    <p class="tema-perg">Escolha o tema da sua metodologia que mais precisa de atenção:</p>
     <div class="opcoes temas" id="temas">${etapas().map(e=>`<button class="opc" type="button" data-t="${esc(e.n)}"><span class="opc-txt">${esc(e.n)}</span><span class="ok" aria-hidden="true">✓</span></button>`).join("")}
       <button class="opc" type="button" data-t="outro"><span class="opc-txt">Outro tema</span><span class="ok" aria-hidden="true">✓</span></button></div>
     <textarea id="outro" class="tema-outro" placeholder="Escreva o tema aqui" maxlength="160" hidden></textarea>
